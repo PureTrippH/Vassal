@@ -1,0 +1,20 @@
+name: Vassal
+version: '${project.version}'
+main: org.puretripp.vassal.main.Main
+api-version: 1.18
+prefix:
+  Vassal:
+load: STARTUP
+authors: [ PureGem ]
+description: A reimagining of the classical Factions and Kingdoms systems
+commands:
+  vassal:
+    description: The Master Command to Control Your Vassal
+    usage: /<command> <subcommand> <arguments...>
+    permission: vassal.commands
+    aliases: [va, vassals, t, f, la]
+  nation:
+    description: The Master Command to Control Your Nation
+    usage: /<command> <subcommand> <arguments...>
+    permission: vassal.nation.commands
+    aliases: [na, n, nations]
