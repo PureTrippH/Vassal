@@ -1,10 +1,10 @@
-name: Vassal
+name: Vassals
 version: '${project.version}'
+depend: [Vault]
 main: org.puretripp.vassal.main.Main
 api-version: 1.18
-prefix:
-  Vassal:
-load: STARTUP
+prefix: Vassals
+load: POSTWORLD
 authors: [ PureGem ]
 description: A reimagining of the classical Factions and Kingdoms systems
 commands:

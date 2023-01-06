@@ -18,35 +18,13 @@ public class TownshipMenu extends Menu implements Listener {
     public TownshipMenu(Township town) {
         super("Town Menu");
         this.town = town;
-        populateItems();
     }
 
-    public void populateItems() {
-        ItemStack banner = new ItemStack(Material.WHITE_BANNER);
-        Nation n = town.getNation();
-        if (n != null) {
-            if(n.getBanner() != null) {
-                banner.setItemMeta(n.getBanner());
-            }
-        }
-        super.inv.setItem(11, banner);
-    }
 
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
         if (e.getInventory().equals(inv)) {
-            if (e.getCurrentItem().getItemMeta() instanceof BannerMeta) {
-                final Player p = (Player) e.getWhoClicked();
-                Nation n = town.getNation();
-                if(n != null) {
-                    n.setBannerType(e.getCurrentItem().getType());
-                    n.setBanner((BannerMeta) e.getCurrentItem().getItemMeta());
-                    p.sendMessage("Nation Banner Set");
-                } else {
-                    p.sendMessage("MUST BE IN A NATION TO DO THAT!");
-                }
-            }
-            e.setCancelled(true);
+
         }
     }
 }

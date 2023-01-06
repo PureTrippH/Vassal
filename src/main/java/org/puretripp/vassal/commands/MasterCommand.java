@@ -34,7 +34,9 @@ public class MasterCommand implements CommandExecutor {
             switch (args[0].toLowerCase()) {
                 case "view":
                     p.openInventory((new TownshipMenu(vp.getSelected())).getInv());
-                return true;
+                    return true;
+                case "join":
+                    return true;
                 case "display":
                     vp.getSelected().display(p);
                     return true;

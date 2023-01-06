@@ -31,10 +31,10 @@ public class Township {
 
     /**
      * Constructs a full new town with no defaults. Deep copies everything.
-     * @param name
-     * @param chunks
-     * @param players
-     * @param bal
+     * @param name TODO
+     * @param chunks TODO
+     * @param players TODO
+     * @param bal TODO
      */
     public Township(String name, UUID leader, double bal, ArrayList<LandChunk> chunks, ArrayList<UUID> players) {
         this.name = name;
@@ -97,7 +97,7 @@ public class Township {
     public static Township getTownByName(String s) {
         return towns.get(s);
     }
-
+    public ArrayList<UUID> getPlayers() { return players; }
     public Nation getNation() {
         return nation;
     }

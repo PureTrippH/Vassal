@@ -1,8 +1,11 @@
 package org.puretripp.vassal.events;
 
 import org.bukkit.Material;
+import org.bukkit.Rotation;
 import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -45,20 +48,48 @@ public class Events implements Listener {
             VassalsPlayer vp = VassalWorld.getPlayer(e.getPlayer());
             if (!vp.isInTown(lc.getTown())) {
                 e.setCancelled(true);
+                return;
             }
         }
         if(e.getBlock().getType() == Material.WHITE_BANNER
                 || e.getBlock().getType() == Material.WHITE_WALL_BANNER) {
             Nation n = lc.getTown().getNation();
             if(n != null) {
-                Rotatable t = (Rotatable) e.getBlock().getBlockData();
-                e.getBlock().setType(n.getBannerType());
-                Banner banner = (Banner) e.getBlock().getState();
-                banner.setPatterns(n.getBanner().getPatterns());
-                e.getPlayer().sendMessage("Banner Placed");
-                e.getBlock().setBlockData(t);
-                banner.update();
+                if(e.getBlock().getType() == Material.WHITE_WALL_BANNER) {
+                    String color = n.getBannerType().toString().split("_")[0];
+                    e.getBlock().setType(Material.getMaterial(color.toUpperCase() + "_WALL_BANNER"));
+                    e.getBlock().getState().update(true);
+                    Banner banner = (Banner) e.getBlock().getState();
+                    banner.setPatterns(n.getBanner().getPatterns());
+                    e.getPlayer().sendMessage("Banner Placed");
+                    banner.update();
+                } else {
+                    //Initial State
+                    Rotatable t = (Rotatable) e.getBlock().getBlockData();
+                    BlockFace rotation = t.getRotation();
+
+                    //Sets the Block Type
+                    e.getBlock().setType(n.getBannerType());
+                    e.getBlock().getState().update(true);
+
+                    //Sets Rotation
+                    t.setRotation(rotation);
+
+                    //Sets Banner Data
+                    Banner banner = (Banner) e.getBlock().getState();
+                    banner.setPatterns(n.getBanner().getPatterns());
+                    e.getPlayer().sendMessage("Banner Placed");
+                    banner.update();
+                    Rotatable newRotate = ((Rotatable) banner.getBlockData());
+                    newRotate.setRotation(rotation);
+                    e.getBlock().setBlockData(newRotate);
+                }
             }
         }
+    }
+
+    @EventHandler
+    public void onNationCreation(OnNationCreation e) {
+
     }
 }

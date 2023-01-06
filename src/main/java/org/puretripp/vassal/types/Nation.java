@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class Nation {
 
     private String name;
-    private Material bannerType;
+    private Material bannerType = Material.WHITE_BANNER;
     private BannerMeta banner;
     private int cityCount;
     private GovStyles style;
@@ -36,6 +36,8 @@ public class Nation {
         this.leaders = leaders;
         this.council = council;
     }
+
+    public String getName() { return name; }
 
     public void setBanner(BannerMeta banner) { this.banner = banner; }
 
