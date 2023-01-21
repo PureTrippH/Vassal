@@ -1,5 +1,7 @@
 package org.puretripp.vassal.utils;
 
+import org.bukkit.Location;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
@@ -10,8 +12,13 @@ import java.util.UUID;
 
 public class VassalsPlayer {
     private HashMap<Township, TownRanks> memberInfo = new HashMap<Township, TownRanks>();
+    private ArrayList<Township> invites = new ArrayList<Township>();
+
+    private ArrayList<Location> vertexSelections = new ArrayList<>(10);
+    private ArrayList<BukkitRunnable> clientTasks = new ArrayList<>();
     private Township selectedTown;
-    Nation n;
+    private boolean isInSelectionMode;
+    private Nation n;
     private UUID uuid;
 
     public VassalsPlayer(UUID uuid) {
@@ -41,10 +48,31 @@ public class VassalsPlayer {
         return memberInfo.containsKey(t);
     }
 
+    public TownRanks getRank(Township t) {
+        return memberInfo.get(t);
+    }
+
+    public void changeRank(Township t, TownRanks rank) {
+        memberInfo.replace(t, rank);
+    }
+
     public Nation getNation() { return n; }
+
+    public boolean getSelectionMode() { return isInSelectionMode; }
+    public void setSelectionMode(boolean newMode) { isInSelectionMode = newMode; }
+
+    public ArrayList<Location> getAllVertices() { return vertexSelections; }
 
     public void setNation(Nation n) { this.n = n; }
 
+    public void addInvite(Township t) { invites.add(t); }
+
+    public void addTask(BukkitRunnable run) { clientTasks.add(run); }
+
+    public void addVertex(Location v) { vertexSelections.add(v); }
+    public void removeVertex(Location v) { vertexSelections.remove(v); }
+    public boolean containsVertex(Location v) { return vertexSelections.contains(v); }
+    public void clearVertices() { vertexSelections.clear(); }
     @Override
     public boolean equals(Object o) {
         if(o instanceof VassalsPlayer) {

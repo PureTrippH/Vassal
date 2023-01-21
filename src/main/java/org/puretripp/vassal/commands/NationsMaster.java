@@ -38,6 +38,9 @@ public class NationsMaster implements CommandExecutor {
         VassalsPlayer vp = VassalWorld.onlinePlayers.get(VassalWorld.onlinePlayers.indexOf(new VassalsPlayer(p.getUniqueId())));
         try {
             switch (args[0].toLowerCase()) {
+                case "invites":
+                    p.openInventory((new NationMenu(vp.getNation())).getInv());
+                    return true;
                 case "view":
                     p.openInventory((new NationMenu(vp.getNation())).getInv());
                     return true;

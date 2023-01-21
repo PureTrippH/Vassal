@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 public final class Main extends JavaPlugin {
     //Btw this password is Old
-    private String uri = "mongodb+srv://PluginDevGem:L6da01wLdVw1WDgF@plugindata.wriycde.mongodb.net/?retryWrites=true&w=majority";
+    private String uri = "lolNOPENOTIT";
     private MongoClient client;
     //Holds all of the Server's data from the curent session.
     public static VassalWorld currentInstance;
@@ -77,7 +77,8 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        //Shuts Down ALL Threads
+        Bukkit.getServer().getScheduler().cancelTasks(this);
     }
 
 }

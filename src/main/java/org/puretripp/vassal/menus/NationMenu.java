@@ -55,7 +55,7 @@ public class NationMenu extends Menu {
                     } else {
                         p.sendMessage("MUST BE IN A NATION TO DO THAT!");
                     }
-                    p.closeInventory();
+                    p.updateInventory();
                     p.openInventory(inv);
                 }
                 e.setCancelled(true);

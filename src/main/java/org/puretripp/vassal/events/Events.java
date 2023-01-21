@@ -1,7 +1,6 @@
 package org.puretripp.vassal.events;
 
-import org.bukkit.Material;
-import org.bukkit.Rotation;
+import org.bukkit.*;
 import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -11,10 +10,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.utils.LandChunk;
+import org.puretripp.vassal.utils.Residence;
 import org.puretripp.vassal.utils.VassalWorld;
 import org.puretripp.vassal.utils.VassalsPlayer;
 
@@ -35,8 +39,13 @@ public class Events implements Listener {
         LandChunk lc = VassalWorld.getLandChunkByChunk(e.getBlock().getLocation().getChunk());
         if(lc != null) {
             VassalsPlayer vp = VassalWorld.getPlayer(e.getPlayer());
-            if(!vp.isInTown(lc.getTown())) {
-                e.setCancelled(true);
+            e.setCancelled(!vp.isInTown(lc.getTown()));
+            for (Residence r : lc.getTown().getAllResidences()) {
+                if(r.contains(e.getBlock().getLocation())) {
+                    Bukkit.getLogger().info(ChatColor.DARK_RED + "INSIDE POINT");
+                    e.setCancelled(!r.getOwner().equals(e.getPlayer().getUniqueId()));
+                    e.getPlayer().sendMessage("You are Inside The Region!");
+                }
             }
         }
     }
@@ -46,9 +55,11 @@ public class Events implements Listener {
         LandChunk lc = VassalWorld.getLandChunkByChunk(e.getBlock().getLocation().getChunk());
         if (lc != null) {
             VassalsPlayer vp = VassalWorld.getPlayer(e.getPlayer());
-            if (!vp.isInTown(lc.getTown())) {
-                e.setCancelled(true);
-                return;
+            e.setCancelled(!vp.isInTown(lc.getTown()));
+            for (Residence r : lc.getTown().getAllResidences()) {
+                if(r.contains(e.getBlock().getLocation())) {
+                    e.setCancelled(!r.getOwner().equals(e.getPlayer().getUniqueId()));
+                }
             }
         }
         if(e.getBlock().getType() == Material.WHITE_BANNER
@@ -86,6 +97,30 @@ public class Events implements Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e) {
+        if(e.getClickedBlock() == null) return;
+        LandChunk c = VassalWorld.getLandChunkByChunk(e.getClickedBlock().getChunk());
+        if (c == null) return;
+        VassalsPlayer vp = VassalWorld.getPlayer(e.getPlayer());
+        if (vp.getSelectionMode() && vp.getRank(vp.getSelected()).getValue() > 8) {
+            if (vp.containsVertex(e.getClickedBlock().getLocation())) {
+                vp.removeVertex(e.getClickedBlock().getLocation());
+            } else {
+                vp.addVertex(e.getClickedBlock().getLocation());
+                BukkitRunnable showParticles = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        e.getPlayer().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, e.getClickedBlock().getLocation().add(0, 1, 0), 5,  0, 1, 0, 0);
+                    }
+                };
+                showParticles.runTaskTimerAsynchronously(Main.getPlugin(Main.class), 1L, 20L);
+                vp.addTask(showParticles);
+            }
+        }
+
     }
 
     @EventHandler

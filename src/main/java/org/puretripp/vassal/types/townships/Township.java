@@ -5,10 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.ranks.TownRanks;
-import org.puretripp.vassal.utils.ChunkType;
-import org.puretripp.vassal.utils.LandChunk;
-import org.puretripp.vassal.utils.VassalWorld;
-import org.puretripp.vassal.utils.VassalsPlayer;
+import org.puretripp.vassal.utils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,9 +19,10 @@ public class Township {
     //private static transient final long serialVersionUID = -1681012206529286330L;
     private UUID leader;
     private String name;
-    public ArrayList<LandChunk> chunks;
+    private ArrayList<LandChunk> chunks;
+    private ArrayList<Residence> residences;
     private ArrayList<UUID> players;
-    ArrayList<Player> members;
+    private ArrayList<Player> insideClaim;
 
     private Nation nation;
     private double bal;
@@ -50,6 +48,7 @@ public class Township {
         this.bal = bal;
         this.players = (ArrayList<UUID>) players.clone();
         this.chunks = new ArrayList<LandChunk>();
+        this.residences = new ArrayList<Residence>();
         LandChunk lc = new LandChunk(c, leader, this, ChunkType.CAPITAL);
         chunks.add(lc);
         VassalWorld.allLand.put(c, lc);
@@ -98,10 +97,14 @@ public class Township {
         return towns.get(s);
     }
     public ArrayList<UUID> getPlayers() { return players; }
-    public Nation getNation() {
-        return nation;
-    }
+    public Nation getNation() { return nation; }
     public void setNation(Nation nation) { this.nation = nation; };
+    public void addResidence(Residence res) { residences.add(res); };
+    public ArrayList<Residence> getAllResidences() { return residences; };
+    public void addInsideClaim(Player p) { insideClaim.add(p); };
+    public void removeInsideClaim(Player p) { insideClaim.remove(p); };
+
+    public LandChunk getChunk(int i) { return chunks.get(i); }
 
     public void addPlayer(VassalsPlayer vp) {
         vp.addTown(this, TownRanks.CITIZEN);

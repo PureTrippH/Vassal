@@ -1,13 +1,18 @@
 package org.puretripp.vassal.commands;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
+import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.menus.TownshipMenu;
 import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
+import org.puretripp.vassal.utils.Residence;
 import org.puretripp.vassal.utils.VassalWorld;
 import org.puretripp.vassal.utils.VassalsPlayer;
 
@@ -33,7 +38,15 @@ public class MasterCommand implements CommandExecutor {
         try {
             switch (args[0].toLowerCase()) {
                 case "view":
-                    p.openInventory((new TownshipMenu(vp.getSelected())).getInv());
+                    p.openInventory((new TownshipMenu(vp.getSelected(), vp)).getInv());
+                    return true;
+                case "invite":
+                    if (args.length <= 1) {
+                        throw new IllegalArgumentException("Must include a Name!");
+                    }
+                    if (vp.getRank(vp.getSelected()).getValue() >= 8) {
+
+                    }
                     return true;
                 case "join":
                     return true;
@@ -43,6 +56,31 @@ public class MasterCommand implements CommandExecutor {
                 case "claim":
                     vp.getSelected().claimChunk(p.getLocation().getChunk());
                     vp.getSelected().display(p);
+                    return true;
+                case "allocate":
+                    //REDO SYSTEM TO BE GUI FOCUSED
+                    if (args.length <= 1) {
+                        throw new IllegalArgumentException("Must add <add/clear>!");
+                    }
+                    String mode = args[1];
+                    if (mode.equals("toggle")) {
+                        vp.setSelectionMode(!vp.getSelectionMode());
+                        p.sendMessage("Toggled Vertex Selection Mode: " + ((vp.getSelectionMode()) ? "On" : "Off"));
+                    }
+                    if (mode.equals("create")) {
+                        //Yes ik this is overdoing it but idc
+                        if (args.length <= 2) {
+                            throw new IllegalArgumentException("Need a height specifier");
+                        }
+                        ArrayList<Location> vertices = new ArrayList<>(vp.getAllVertices());
+                        ArrayList <UUID> members = new ArrayList<>();
+                        members.add(p.getUniqueId());
+                        Township t = VassalWorld.getLandChunkByChunk(vertices.get(0).getChunk()).getTown();
+                        Residence res = new Residence(vertices, Integer.parseInt(args[2]), p.getUniqueId(), members);
+                        t.addResidence(res);
+                        p.sendMessage("Added Residence");
+                    }
+                    if (mode.equals("clear")) { vp.clearVertices(); }
                     return true;
                 case "create":
                     //Creates Name
@@ -70,7 +108,7 @@ public class MasterCommand implements CommandExecutor {
                     //Send indicators
                     p.sendMessage("Township of " + name + " has been created!");
                     p.playSound(p, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 2f);
-                    t.chunks.get(0).displayChunk(p, true, true, true, true);
+                    t.getChunk(0).displayChunk(p, true, true, true, true);
                     return true;
                 default:
                     p.sendMessage("Vassals: Command Not Found");
