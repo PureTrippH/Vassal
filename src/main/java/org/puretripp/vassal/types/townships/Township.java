@@ -99,6 +99,7 @@ public class Township {
     public ArrayList<UUID> getPlayers() { return players; }
     public Nation getNation() { return nation; }
     public void setNation(Nation nation) { this.nation = nation; };
+    public String getName() { return name; }
     public void addResidence(Residence res) { residences.add(res); };
     public ArrayList<Residence> getAllResidences() { return residences; };
     public void addInsideClaim(Player p) { insideClaim.add(p); };

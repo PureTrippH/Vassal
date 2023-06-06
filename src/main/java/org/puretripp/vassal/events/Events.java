@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Rotatable;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -21,13 +22,18 @@ import org.puretripp.vassal.utils.LandChunk;
 import org.puretripp.vassal.utils.Residence;
 import org.puretripp.vassal.utils.VassalWorld;
 import org.puretripp.vassal.utils.VassalsPlayer;
+import org.puretripp.vassal.utils.runnables.LineRunnable;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Events implements Listener {
     VassalWorld instance = Main.currentInstance;
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        instance.onlinePlayers.add(new VassalsPlayer(e.getPlayer().getUniqueId()));
+        instance.onlinePlayers.put(e.getPlayer().getUniqueId(), new VassalsPlayer(e.getPlayer().getUniqueId()));
     }
 
     /**
@@ -105,22 +111,61 @@ public class Events implements Listener {
         LandChunk c = VassalWorld.getLandChunkByChunk(e.getClickedBlock().getChunk());
         if (c == null) return;
         VassalsPlayer vp = VassalWorld.getPlayer(e.getPlayer());
-        if (vp.getSelectionMode() && vp.getRank(vp.getSelected()).getValue() > 8) {
+        if (vp.getSelectionMode() && vp.getRank(vp.getSelected()).getValue() > 8 && vp.canClickAgain) {
             if (vp.containsVertex(e.getClickedBlock().getLocation())) {
                 vp.removeVertex(e.getClickedBlock().getLocation());
             } else {
                 vp.addVertex(e.getClickedBlock().getLocation());
+                if (vp.vertexSelections.size() >= 2) {
+                    //Add To Stack
+                    if (vp.vertexSelections.size() > 2) {
+                        ArrayList<LineRunnable> removeLine = vp.partViewStack.removeFirst();
+                        for (LineRunnable particles : removeLine) {
+                            particles.stopParticles();
+                            particles.cancel();
+                        }
+                    }
+                    vp.partViewStack.addFirst(generateLine(vp, e.getPlayer(), vp.vertexSelections.get(vp.vertexSelections.size() - 2).clone(), vp.vertexSelections.getLast().clone()));
+                    vp.partViewStack.addFirst(generateLine(vp, e.getPlayer(), vp.vertexSelections.getLast().clone(), vp.vertexSelections.getFirst().clone()));
+                }
                 BukkitRunnable showParticles = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        e.getPlayer().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, e.getClickedBlock().getLocation().add(0, 1, 0), 5,  0, 1, 0, 0);
+                        Particle.DustOptions options = new Particle.DustOptions(Color.fromRGB(207, 131, 64), 2.0F);
+                        e.getPlayer().spawnParticle(Particle.REDSTONE, e.getClickedBlock().getLocation().add(0.5, 1.5, 0.5), 50,  0, 0, 0, 0, options);
                     }
                 };
                 showParticles.runTaskTimerAsynchronously(Main.getPlugin(Main.class), 1L, 20L);
                 vp.addTask(showParticles);
             }
+            vp.canClickAgain = false;
+            BukkitRunnable delayClick = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    vp.canClickAgain = true;
+                }
+            };
+            delayClick.runTaskLater(Main.getPlugin(Main.class), 40L);
         }
 
+    }
+
+    /**
+     * Util for Vertices
+     */
+    public ArrayList<LineRunnable> generateLine(VassalsPlayer vp, Player p, Location start, Location end) {
+        Location vertex1Clone = start.clone();
+        Vector borderVector = end.clone().subtract(start).toVector().normalize().multiply(0.2);
+        p.sendMessage(String.valueOf(vertex1Clone.distance(end)));
+        Location addedBorder = start;
+        ArrayList<LineRunnable> line = new ArrayList<>();
+        for (double covered = 0 ; covered < vertex1Clone.distance(end); start.add(borderVector)) {
+            LineRunnable showParticles = new LineRunnable(start.clone().add(new Vector(0.5, 1.5, 0.5)), p);
+            showParticles.runTaskTimerAsynchronously(Main.getPlugin(Main.class), 1L, 20L);
+            line.add(showParticles);
+            covered += 0.2;
+        }
+        return line;
     }
 
     @EventHandler

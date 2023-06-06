@@ -35,7 +35,7 @@ public class NationsMaster implements CommandExecutor {
             p.sendMessage("Vassals: Command Not Found");
             return true;
         }
-        VassalsPlayer vp = VassalWorld.onlinePlayers.get(VassalWorld.onlinePlayers.indexOf(new VassalsPlayer(p.getUniqueId())));
+        VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
         try {
             switch (args[0].toLowerCase()) {
                 case "invites":

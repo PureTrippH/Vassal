@@ -26,6 +26,12 @@ public class Residence {
     public void addVertex(Location l) {
         vertices.add(l);
     }
+
+    public void showBorder() {
+
+    }
+
+
     //Ty _Donut_ on Spigot <3
     public boolean contains(Location point) {
         int intersections = 0;

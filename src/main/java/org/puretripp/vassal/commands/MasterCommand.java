@@ -6,9 +6,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.puretripp.vassal.main.Main;
+import org.puretripp.vassal.menus.PlayerMenu;
 import org.puretripp.vassal.menus.TownshipMenu;
 import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
@@ -34,9 +36,12 @@ public class MasterCommand implements CommandExecutor {
             p.sendMessage("Vassals: Command Not Found");
             return true;
         }
-        VassalsPlayer vp = VassalWorld.onlinePlayers.get(VassalWorld.onlinePlayers.indexOf(new VassalsPlayer(p.getUniqueId())));
+        VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
         try {
             switch (args[0].toLowerCase()) {
+                case "self":
+                    p.openInventory((new PlayerMenu(vp)).getInv());
+                    return true;
                 case "view":
                     p.openInventory((new TownshipMenu(vp.getSelected(), vp)).getInv());
                     return true;
@@ -44,8 +49,10 @@ public class MasterCommand implements CommandExecutor {
                     if (args.length <= 1) {
                         throw new IllegalArgumentException("Must include a Name!");
                     }
-                    if (vp.getRank(vp.getSelected()).getValue() >= 8) {
-
+                    OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+                    if (vp.getRank(vp.getSelected()).getValue() >= 8 || target.hasPlayedBefore()) {
+                        VassalWorld.getPlayer((Player) target).addInvite(vp.getSelected());
+                        ((Player) target).sendTitle(ChatColor.GREEN + "New Invite!", ChatColor.GREEN + p.getPlayer().getName() + "Has Invited You To a Town", 5, 30, 5);
                     }
                     return true;
                 case "join":

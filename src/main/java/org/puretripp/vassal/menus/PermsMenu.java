@@ -104,8 +104,7 @@ public class PermsMenu extends Menu {
                                 e.getWhoClicked().sendMessage(data.get(key, PersistentDataType.STRING));
                                 OfflinePlayer p = Bukkit.getOfflinePlayer(
                                         UUID.fromString(data.get(key, PersistentDataType.STRING).substring(6)));
-                                target = VassalWorld.onlinePlayers.get(
-                                        VassalWorld.onlinePlayers.indexOf(new VassalsPlayer(e.getWhoClicked().getUniqueId())));
+                                target = VassalWorld.onlinePlayers.get(e.getWhoClicked().getUniqueId());
                                 openPerms(target, (Player) e.getWhoClicked());
                             }
                             break;

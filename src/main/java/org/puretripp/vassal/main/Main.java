@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bson.Document;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.puretripp.vassal.commands.CommandManager;
 import org.puretripp.vassal.commands.MasterCommand;
 import org.puretripp.vassal.commands.NationsMaster;
 import org.puretripp.vassal.events.Events;
@@ -30,8 +31,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
-        this.getCommand("vassal").setExecutor(new MasterCommand());
-        this.getCommand("nation").setExecutor(new NationsMaster());
+        this.getCommand("vassal").setExecutor(new CommandManager());
         currentInstance = new VassalWorld();
         //Register Events
         getServer().getPluginManager().registerEvents(new Events(), this);

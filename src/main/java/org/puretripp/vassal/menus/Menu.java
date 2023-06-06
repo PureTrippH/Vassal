@@ -20,6 +20,7 @@ import org.bukkit.profile.PlayerProfile;
 import org.puretripp.vassal.main.Main;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -27,7 +28,7 @@ import java.util.UUID;
  * @author Tripp H.
  * @version 1.0
  */
-public abstract class Menu implements Listener {
+public class Menu implements Listener {
     protected final Inventory inv;
     private Plugin pl = Main.getPlugin(Main.class);
     protected ArrayList<ItemStack> contents = new ArrayList<ItemStack>();
@@ -85,15 +86,24 @@ public abstract class Menu implements Listener {
         }
     }
 
-    protected static ItemStack generateItem(Material m, String name, String value) {
+    protected static ItemStack generateItem(Material m, String name, String value, List<String> lore) {
         ItemStack newIcon = new ItemStack(m);
         ItemMeta meta = newIcon.getItemMeta();
         meta.setDisplayName(name);
+        meta.setLore(lore);
         NamespacedKey clickFunc = new NamespacedKey(Main.getPlugin(Main.class), "iconClickFunction");
         PersistentDataContainer data = meta.getPersistentDataContainer();
         data.set(clickFunc, PersistentDataType.STRING, value);
+        if (lore != null) {
+            meta.setLore(lore);
+        }
         newIcon.setItemMeta(meta);
         return newIcon;
+    }
+
+
+    protected static ItemStack generateItem(Material m, String name, String value) {
+        return generateItem(m, name, value, new ArrayList<String>());
     }
 
     protected void refreshContents() {

@@ -9,7 +9,6 @@ import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.plugin.Plugin;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.types.Nation;
-import org.puretripp.vassal.types.townships.Township;
 
 public class NationMenu extends Menu {
     Nation n;
