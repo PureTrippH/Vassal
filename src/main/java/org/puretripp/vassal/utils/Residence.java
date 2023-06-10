@@ -40,6 +40,7 @@ public class Residence {
             Location vertex2 = vertices.get(i + 1 < vertices.size() ? i + 1 : 0);
             double x0 = vertex1.getX();
             double z0 = vertex1.getZ();
+            double y0 = vertex1.getY();
             double x1 = vertex2.getX();
             double z1 = vertex2.getZ();
 
