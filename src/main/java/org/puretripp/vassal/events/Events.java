@@ -2,31 +2,28 @@ package org.puretripp.vassal.events;
 
 import org.bukkit.*;
 import org.bukkit.block.Banner;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.puretripp.vassal.main.Main;
+import org.puretripp.vassal.menus.submenus.SubclaimMenu;
 import org.puretripp.vassal.types.Nation;
-import org.puretripp.vassal.utils.LandChunk;
-import org.puretripp.vassal.utils.Residence;
-import org.puretripp.vassal.utils.VassalWorld;
-import org.puretripp.vassal.utils.VassalsPlayer;
+import org.puretripp.vassal.utils.claiming.LandChunk;
+import org.puretripp.vassal.utils.claiming.Residence;
+import org.puretripp.vassal.utils.general.VassalWorld;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
 import org.puretripp.vassal.utils.runnables.LineRunnable;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Events implements Listener {
     VassalWorld instance = Main.currentInstance;
@@ -111,22 +108,31 @@ public class Events implements Listener {
         LandChunk c = VassalWorld.getLandChunkByChunk(e.getClickedBlock().getChunk());
         if (c == null) return;
         VassalsPlayer vp = VassalWorld.getPlayer(e.getPlayer());
-        if (vp.getSelectionMode() && vp.getRank(vp.getSelected()).getValue() > 8 && vp.canClickAgain) {
-            if (vp.containsVertex(e.getClickedBlock().getLocation())) {
-                vp.removeVertex(e.getClickedBlock().getLocation());
+        if (vp.getIsSelectionMode() && vp.getRank(vp.getSelected()).getValue() > 8 && vp.cooldowns.getOrDefault("clickAgainCooldown", true)) {
+            Residence res = vp.getSelectedResidence();
+            if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
+                e.getPlayer().openInventory(new SubclaimMenu(vp.getSelectedResidence(), vp.getSelected(), vp).getInv());
+                res.clearLines(vp);
+                vp.clearTasks();
+                vp.setSelectionMode(null);
+                e.setCancelled(true);
+                return;
+            }
+            if (res.containsVertex(e.getClickedBlock().getLocation())) {
+                res.removeVertex(e.getClickedBlock().getLocation());
             } else {
-                vp.addVertex(e.getClickedBlock().getLocation());
-                if (vp.vertexSelections.size() >= 2) {
+                vp.getSelectedResidence().addVertex(e.getClickedBlock().getLocation());
+                if (res.polygonSize() >= 2) {
                     //Add To Stack
-                    if (vp.vertexSelections.size() > 2) {
-                        ArrayList<LineRunnable> removeLine = vp.partViewStack.removeFirst();
+                    if (res.polygonSize() > 2) {
+                        ArrayList<LineRunnable> removeLine = res.removeBackVert();
                         for (LineRunnable particles : removeLine) {
                             particles.stopParticles();
                             particles.cancel();
                         }
                     }
-                    vp.partViewStack.addFirst(generateLine(vp, e.getPlayer(), vp.vertexSelections.get(vp.vertexSelections.size() - 2).clone(), vp.vertexSelections.getLast().clone()));
-                    vp.partViewStack.addFirst(generateLine(vp, e.getPlayer(), vp.vertexSelections.getLast().clone(), vp.vertexSelections.getFirst().clone()));
+                    res.addLine(Residence.generateLine(vp, e.getPlayer(), res.getVertex(res.polygonSize() - 2).clone(), res.getVertex(res.polygonSize() - 1).clone()));
+                    res.addLine(Residence.generateLine(vp, e.getPlayer(), res.getVertex(res.polygonSize() - 1).clone(), res.getVertex(0).clone()));
                 }
                 BukkitRunnable showParticles = new BukkitRunnable() {
                     @Override
@@ -135,14 +141,15 @@ public class Events implements Listener {
                         e.getPlayer().spawnParticle(Particle.REDSTONE, e.getClickedBlock().getLocation().add(0.5, 1.5, 0.5), 50,  0, 0, 0, 0, options);
                     }
                 };
+                vp.addTask(showParticles);
                 showParticles.runTaskTimerAsynchronously(Main.getPlugin(Main.class), 1L, 20L);
                 vp.addTask(showParticles);
             }
-            vp.canClickAgain = false;
+            vp.cooldowns.put("clickAgainCooldown", false);
             BukkitRunnable delayClick = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    vp.canClickAgain = true;
+                    vp.cooldowns.put("clickAgainCooldown", true);
                 }
             };
             delayClick.runTaskLater(Main.getPlugin(Main.class), 40L);
@@ -150,26 +157,5 @@ public class Events implements Listener {
 
     }
 
-    /**
-     * Util for Vertices
-     */
-    public ArrayList<LineRunnable> generateLine(VassalsPlayer vp, Player p, Location start, Location end) {
-        Location vertex1Clone = start.clone();
-        Vector borderVector = end.clone().subtract(start).toVector().normalize().multiply(0.2);
-        p.sendMessage(String.valueOf(vertex1Clone.distance(end)));
-        Location addedBorder = start;
-        ArrayList<LineRunnable> line = new ArrayList<>();
-        for (double covered = 0 ; covered < vertex1Clone.distance(end); start.add(borderVector)) {
-            LineRunnable showParticles = new LineRunnable(start.clone().add(new Vector(0.5, 1.5, 0.5)), p);
-            showParticles.runTaskTimerAsynchronously(Main.getPlugin(Main.class), 1L, 20L);
-            line.add(showParticles);
-            covered += 0.2;
-        }
-        return line;
-    }
 
-    @EventHandler
-    public void onNationCreation(OnNationCreation e) {
-
-    }
 }

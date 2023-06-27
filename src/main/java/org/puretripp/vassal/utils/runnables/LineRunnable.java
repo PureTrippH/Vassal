@@ -5,6 +5,11 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
+import org.puretripp.vassal.main.Main;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
+
+import java.util.ArrayList;
 
 public class LineRunnable extends BukkitRunnable {
     private Location pos;

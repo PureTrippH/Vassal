@@ -32,6 +32,7 @@ public class Menu implements Listener {
     protected final Inventory inv;
     private Plugin pl = Main.getPlugin(Main.class);
     protected ArrayList<ItemStack> contents = new ArrayList<ItemStack>();
+    protected ArrayList<Menu> subMenus = new ArrayList<Menu>();
     private int page = 1;
 
     /**

@@ -5,7 +5,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.puretripp.vassal.types.governments.GovStyles;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.VassalsPlayer;
+import org.puretripp.vassal.utils.claiming.perms.PermClass;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,7 @@ public class Nation {
     private int nationBal;
     private ArrayList<VassalsPlayer> leaders;
     private ArrayList<VassalsPlayer> council;
+    private ArrayList<PermClass> permLevels;
     private int kill;
 
     public Nation(String name, BannerMeta banner, GovStyles style,

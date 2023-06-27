@@ -4,14 +4,15 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.puretripp.vassal.types.Nation;
+import org.puretripp.vassal.utils.claiming.Residence;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
-public class OnNationCreation extends Event implements Cancellable {
+public class OnVertexSelectionOpen extends Event implements Cancellable {
+    private Residence subClaim;
+    private VassalsPlayer player;
+
     private boolean isCancelled;
     private static final HandlerList handlers = new HandlerList();
-
-    private Nation nation;
-    private VassalsPlayer player;
 
     @Override
     public boolean isCancelled() {
@@ -27,13 +28,12 @@ public class OnNationCreation extends Event implements Cancellable {
         return handlers;
     }
 
-    public OnNationCreation(Nation nation, VassalsPlayer player) {
-        this.nation = nation;
+    public OnVertexSelectionOpen(Residence subClaim, VassalsPlayer player) {
+        this.subClaim = subClaim;
         this.player = player;
     }
 
     public static HandlerList getHandlerList() {
         return handlers;
     }
-
 }

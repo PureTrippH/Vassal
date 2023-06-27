@@ -1,17 +1,12 @@
 package org.puretripp.vassal.menus;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BannerMeta;
-import org.puretripp.vassal.commands.SubCommand;
-import org.puretripp.vassal.types.Nation;
+import org.puretripp.vassal.utils.SubCommand;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

@@ -11,22 +11,15 @@ import org.puretripp.vassal.utils.SubCommand;
 import java.awt.*;
 import java.util.HashMap;
 
-public class CommandManager implements CommandExecutor {
+public class NationCommandManager implements CommandExecutor {
     //Efficiency: O(n) to run help command. External Collision. KEEP THAT IN MIND!
     private String msgPrefix = ChatColor.of(new Color(140, 212, 191)) + "Vassals: ";
     private static HashMap<String, SubCommand> commands = new HashMap<>();
     private Main plugin = Main.getPlugin(Main.class);
 
-    public CommandManager() {
+    public NationCommandManager() {
         plugin.getCommand("vassal").setExecutor(this);
-        this.commands.put("pm", new TownCommands.SelfCommand());
-        this.commands.put("invite", new TownCommands.inviteCommand());
         this.commands.put("help", new TownCommands.helpCommand());
-        this.commands.put("create", new TownCommands.createCommand());
-        this.commands.put("border", new TownCommands.borderCommand());
-        this.commands.put("claim", new TownCommands.claimCommand());
-        this.commands.put("subclaim", new TownCommands.subclaimCommand());
-        this.commands.put("menu", new TownCommands.menu());
     }
 
     public static HashMap<String, SubCommand> getCommands() {
@@ -37,7 +30,7 @@ public class CommandManager implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (!(sender instanceof Player)) throw new IllegalArgumentException("Only Players Can Run This Command!");
 
-        if (!command.getName().equalsIgnoreCase("vassal")) {
+        if (!command.getName().equalsIgnoreCase("nation")) {
             return true;
         }
         Player p = (Player) sender;

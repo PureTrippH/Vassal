@@ -3,17 +3,17 @@ package org.puretripp.vassal.commands;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.puretripp.vassal.menus.HelpMenu;
-import org.puretripp.vassal.menus.Menu;
 import org.puretripp.vassal.menus.PlayerMenu;
+import org.puretripp.vassal.menus.submenus.SubclaimMenu;
 import org.puretripp.vassal.menus.TownshipMenu;
 import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.Residence;
-import org.puretripp.vassal.utils.VassalWorld;
-import org.puretripp.vassal.utils.VassalsPlayer;
+import org.puretripp.vassal.utils.claiming.Residence;
+import org.puretripp.vassal.utils.SubCommand;
+import org.puretripp.vassal.utils.general.VassalWorld;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class TownCommands {
@@ -61,47 +61,6 @@ public class TownCommands {
             HelpMenu cmds = new HelpMenu(CommandManager.getCommands());
             p.playSound(p, Sound.BLOCK_CHEST_OPEN, 1f, 0.3f);
             p.openInventory(cmds.getInv());
-        }
-        public String getName() {
-            return name;
-        }
-        public String getDesc() {
-            return desc;
-        }
-    }
-
-
-    public static class createCommand extends SubCommand {
-        public final String name = "Create";
-        public final String desc = ChatColor.WHITE + "Creates a New Vassal Nation with the name provided\n" + ChatColor.GREEN + "Usage: " + ChatColor.WHITE + "/vassal create <town name (spaces included)>\n";
-        public void onCommand(Player p, String[] args) {
-            //Creates Name
-            VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
-            if (args.length <= 1) {
-                throw new IllegalArgumentException("Must include a Name!");
-            }
-            String name = args[1];
-            if (args.length > 2) {
-                for (int i = 2; i < args.length; i++) {
-                    name += (" " + args[i]);
-                }
-            }
-            ArrayList<UUID> players = new ArrayList<UUID>();
-            players.add(p.getUniqueId());
-            Chunk c = p.getLocation().getChunk();
-            if (VassalWorld.allLand.containsKey(c)) {
-                vp.getSelected().display(p);
-                p.sendMessage("Chunk is Already Claimed!");
-                return;
-            }
-            Township t = new Township(name, p.getUniqueId(), 0, c, players);
-            //Add Town to Player's Info
-            vp.addTown(t, TownRanks.LEADER);
-            vp.setSelected(t);
-            //Send indicators
-            p.sendMessage("Township of " + name + " has been created!");
-            p.playSound(p, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 2f);
-            t.getChunk(0).displayChunk(p, true, true, true, true);
         }
         public String getName() {
             return name;
@@ -166,38 +125,63 @@ public class TownCommands {
     }
 
 
+    public static class createCommand extends SubCommand {
+        public final String name = "Create";
+        public final String desc = ChatColor.WHITE + "Create a New Town\n" + ChatColor.GREEN + "Usage: " + ChatColor.WHITE + "/vassal create (town name spaces included)";
+
+        public void onCommand(Player p, String[] args) {
+            VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
+            if (args.length <= 1) {
+                throw new IllegalArgumentException("Must include a Name!");
+            }
+            String name = args[1];
+            if (args.length > 2) {
+                for (int i = 2; i < args.length; i++) {
+                    name += (" " + args[i]);
+                }
+            }
+            ArrayList<UUID> players = new ArrayList<UUID>();
+            players.add(p.getUniqueId());
+            Chunk c = p.getLocation().getChunk();
+            if (VassalWorld.allLand.containsKey(c)) {
+                p.sendMessage("Chunk is Already Claimed!");
+                return;
+            }
+            Township t = new Township(name, p.getUniqueId(), 0, c, players);
+            //Add Town to Player's Info
+            vp.addTown(t, TownRanks.LEADER);
+            vp.setSelected(t);
+            //Send indicators
+            p.sendMessage("Township of " + name + " has been created!");
+            p.playSound(p, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 2f);
+            t.getChunk(0).displayChunk(p, true, true, true, true);
+        }
+        public String getName() { return name; }
+        public String getDesc() {
+            return desc;
+        }
+    }
+
+
     public static class subclaimCommand extends SubCommand {
         public final String name = "Create Subclaim";
         public final String desc = ChatColor.WHITE + "Claims a 2d, infinite vertex subclaim\n" + ChatColor.GREEN + "Usage: " + ChatColor.WHITE + "/vassal subclaim <toggle/create>";;
 
         public void onCommand(Player p, String[] args) {
-            //REDO SYSTEM TO BE GUI FOCUSED
             VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
             if (args.length <= 1) {
-                throw new IllegalArgumentException("Must add <add/clear>!");
+                throw new IllegalArgumentException("Must include a Name!");
             }
-            String mode = args[1];
-            if (mode.equals("toggle")) {
-                vp.setSelectionMode(!vp.getSelectionMode());
-                p.sendMessage("Toggled Vertex Selection Mode: " + ((vp.getSelectionMode()) ? "On" : "Off"));
-            }
-            if (mode.equals("create")) {
-                //Yes ik this is overdoing it but idc
-                if (args.length <= 2) {
-                    throw new IllegalArgumentException("Need a height specifier");
+            String name = args[1];
+            if (args.length > 2) {
+                for (int i = 2; i < args.length; i++) {
+                    name += (" " + args[i]);
                 }
-                ArrayList<Location> vertices = new ArrayList<>(vp.getAllVertices());
-                ArrayList <UUID> members = new ArrayList<>();
-                members.add(p.getUniqueId());
-                Township t = VassalWorld.getLandChunkByChunk(vertices.get(0).getChunk()).getTown();
-                if (t == null) {
-                    throw new IllegalArgumentException("Vertex is not in town!");
-                }
-                Residence res = new Residence(vertices, Integer.parseInt(args[2]), p.getUniqueId(), members);
-                t.addResidence(res);
-                p.sendMessage("Added Residence");
             }
-            if (mode.equals("clear")) { vp.clearVertices(); }
+            Township t = vp.getSelected();
+            Residence newRes = new Residence(name, t);
+            SubclaimMenu menu = new SubclaimMenu(newRes, t, vp);
+            p.openInventory(menu.getInv());
         }
         public String getName() { return name; }
         public String getDesc() {

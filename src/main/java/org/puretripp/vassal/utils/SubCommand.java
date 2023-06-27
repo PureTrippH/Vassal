@@ -1,4 +1,4 @@
-package org.puretripp.vassal.commands;
+package org.puretripp.vassal.utils;
 
 import org.bukkit.entity.Player;
 

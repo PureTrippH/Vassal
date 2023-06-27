@@ -5,7 +5,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.VassalsPlayer;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 public class OnNationJoin extends Event implements Cancellable {
     private boolean isCancelled;

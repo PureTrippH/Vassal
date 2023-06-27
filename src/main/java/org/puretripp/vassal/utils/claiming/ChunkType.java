@@ -1,7 +1,8 @@
-package org.puretripp.vassal.utils;
+package org.puretripp.vassal.utils.claiming;
 
 public enum ChunkType {
     CAPITAL,
     TREASURY,
+    BAZAAR,
     DEFAULT
 }

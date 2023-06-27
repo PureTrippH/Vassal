@@ -1,25 +1,18 @@
 package org.puretripp.vassal.commands;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.puretripp.vassal.events.OnNationCreation;
-import org.puretripp.vassal.events.OnNationJoin;
 import org.puretripp.vassal.menus.NationMenu;
-import org.puretripp.vassal.menus.TownshipMenu;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.governments.GovStyles;
-import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.VassalWorld;
-import org.puretripp.vassal.utils.VassalsPlayer;
+import org.puretripp.vassal.utils.general.VassalWorld;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class NationsMaster implements CommandExecutor {
     @Override

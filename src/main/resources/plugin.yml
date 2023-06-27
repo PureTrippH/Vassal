@@ -1,6 +1,6 @@
 name: Vassals
 version: '${project.version}'
-depend: [Vault]
+depend: [ProtocolLib, Vault]
 main: org.puretripp.vassal.main.Main
 api-version: 1.18
 prefix: Vassals

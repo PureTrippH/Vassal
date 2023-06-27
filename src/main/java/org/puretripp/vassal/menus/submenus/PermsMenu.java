@@ -1,4 +1,4 @@
-package org.puretripp.vassal.menus;
+package org.puretripp.vassal.menus.submenus;
 
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -9,11 +9,12 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.puretripp.vassal.main.Main;
+import org.puretripp.vassal.menus.Menu;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.VassalWorld;
-import org.puretripp.vassal.utils.VassalsPlayer;
+import org.puretripp.vassal.utils.general.VassalWorld;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 import java.util.UUID;
 

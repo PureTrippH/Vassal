@@ -5,7 +5,12 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.ranks.TownRanks;
-import org.puretripp.vassal.utils.*;
+import org.puretripp.vassal.utils.claiming.ChunkType;
+import org.puretripp.vassal.utils.claiming.LandChunk;
+import org.puretripp.vassal.utils.claiming.Residence;
+import org.puretripp.vassal.utils.claiming.perms.PermClass;
+import org.puretripp.vassal.utils.general.VassalWorld;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +28,8 @@ public class Township {
     private ArrayList<Residence> residences;
     private ArrayList<UUID> players;
     private ArrayList<Player> insideClaim;
+    private ArrayList<PermClass> permLevels;
+    private int level;
 
     private Nation nation;
     private double bal;

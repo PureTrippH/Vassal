@@ -1,8 +1,9 @@
-package org.puretripp.vassal.utils;
+package org.puretripp.vassal.utils.general;
 
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 import org.puretripp.vassal.types.Nation;
+import org.puretripp.vassal.utils.claiming.LandChunk;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -5,16 +5,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.VassalWorld;
-import org.puretripp.vassal.utils.VassalsPlayer;
-
-import java.util.UUID;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 public class PlayerMenu extends Menu {
     VassalsPlayer you;
