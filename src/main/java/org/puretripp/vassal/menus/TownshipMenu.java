@@ -1,7 +1,6 @@
 package org.puretripp.vassal.menus;
 
 import org.bukkit.*;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -13,11 +12,9 @@ import org.bukkit.plugin.Plugin;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.menus.submenus.PermsMenu;
 import org.puretripp.vassal.menus.submenus.SubclaimMenu;
-import org.puretripp.vassal.types.Vassal;
 import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.claiming.Residence;
-import org.puretripp.vassal.utils.claiming.ResidenceType;
+import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 public class TownshipMenu extends Menu implements Listener {
@@ -34,7 +31,7 @@ public class TownshipMenu extends Menu implements Listener {
     }
 
     public void populateItems() {
-        if(vp.getRank(town) == TownRanks.LEADER) {
+        if(town.getPlayerRank(vp.getUUID()).isCanManagePolitics()) {
             super.contents.add(Menu.generateItem(Material.IRON_BARS, (ChatColor.GREEN + "Permissions"),  "Permissions"));
             super.contents.add(Menu.generateItem(Material.RED_BED, (ChatColor.GREEN + "Residences"),  "Residences"));
             super.contents.add(Menu.generateItem(Material.QUARTZ_PILLAR, (ChatColor.GREEN + "Government"),  "Government"));
@@ -54,7 +51,7 @@ public class TownshipMenu extends Menu implements Listener {
                 switch (val) {
                     case ("Permissions"):
                             e.getWhoClicked().openInventory(new PermsMenu(
-                        false, vp.getNation(), vp.getSelected()).getInv());
+                        false, vp.getNation(), vp.getSelected(), vp).getInv());
                         break;
                     case ("Government"):
                         break;

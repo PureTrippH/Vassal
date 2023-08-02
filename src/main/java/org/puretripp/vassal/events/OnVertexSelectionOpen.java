@@ -3,8 +3,7 @@ package org.puretripp.vassal.events;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.puretripp.vassal.types.Nation;
-import org.puretripp.vassal.utils.claiming.Residence;
+import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 public class OnVertexSelectionOpen extends Event implements Cancellable {

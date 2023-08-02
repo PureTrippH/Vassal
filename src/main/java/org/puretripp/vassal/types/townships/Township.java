@@ -7,13 +7,14 @@ import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.utils.claiming.ChunkType;
 import org.puretripp.vassal.utils.claiming.LandChunk;
-import org.puretripp.vassal.utils.claiming.Residence;
+import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -24,11 +25,11 @@ public class Township {
     //private static transient final long serialVersionUID = -1681012206529286330L;
     private UUID leader;
     private String name;
+    private ArrayList<PermClass> permClasses;
     private ArrayList<LandChunk> chunks;
     private ArrayList<Residence> residences;
-    private ArrayList<UUID> players;
+    private HashMap<UUID, PermClass> players;
     private ArrayList<Player> insideClaim;
-    private ArrayList<PermClass> permLevels;
     private int level;
 
     private Nation nation;
@@ -41,21 +42,27 @@ public class Township {
      * @param players TODO
      * @param bal TODO
      */
-    public Township(String name, UUID leader, double bal, ArrayList<LandChunk> chunks, ArrayList<UUID> players) {
+    public Township(String name, UUID leader, double bal, ArrayList<LandChunk> chunks, HashMap<UUID, PermClass> players) {
         this.name = name;
         this.leader = leader;
         this.bal = bal;
         this.chunks = (ArrayList<LandChunk>) chunks.clone();
-        this.players = (ArrayList<UUID>) players.clone();
+        this.players = (HashMap<UUID, PermClass>) players.clone();
+        this.permClasses = new ArrayList<PermClass>();
+        this.permClasses.add(new PermClass());
+        this.permClasses.add(new PermClass("Citizen"));
     }
 
-    public Township(String name, UUID leader, double bal, Chunk c, ArrayList<UUID> players) {
+    public Township(String name, UUID leader, double bal, Chunk c, HashMap<UUID, PermClass> players) {
         this.name = name;
         this.leader = leader;
         this.bal = bal;
-        this.players = (ArrayList<UUID>) players.clone();
+        this.players = (HashMap<UUID, PermClass>) players.clone();
         this.chunks = new ArrayList<LandChunk>();
         this.residences = new ArrayList<Residence>();
+        this.permClasses = new ArrayList<PermClass>();
+        this.permClasses.add(new PermClass());
+        this.permClasses.add(new PermClass("Citizen"));
         LandChunk lc = new LandChunk(c, leader, this, ChunkType.CAPITAL);
         chunks.add(lc);
         VassalWorld.allLand.put(c, lc);
@@ -66,7 +73,7 @@ public class Township {
         this.leader = toCopy.leader;
         this.bal = toCopy.bal;
         this.chunks = (ArrayList<LandChunk>) toCopy.chunks.clone();
-        this.players = (ArrayList<UUID>) toCopy.players.clone();
+        this.players = (HashMap<UUID, PermClass>) toCopy.players.clone();
     }
 
     //TODO: Check for Adjacent Chunks/Buffer Regions
@@ -103,7 +110,7 @@ public class Township {
     public static Township getTownByName(String s) {
         return towns.get(s);
     }
-    public ArrayList<UUID> getPlayers() { return players; }
+    public Set<UUID> getPlayers() { return players.keySet(); }
     public Nation getNation() { return nation; }
     public void setNation(Nation nation) { this.nation = nation; };
     public String getName() { return name; }
@@ -112,10 +119,25 @@ public class Township {
     public void addInsideClaim(Player p) { insideClaim.add(p); };
     public void removeInsideClaim(Player p) { insideClaim.remove(p); };
 
+    //Permission Ranks
+    public PermClass getRank(int i) {
+        return permClasses.get(i);
+    }
+
+    public PermClass getPlayerRank(UUID uuid) {
+        if (!players.containsKey(uuid)) throw new IllegalArgumentException("Player Does Not Exist!");
+        return players.get(uuid);
+    }
+
     public LandChunk getChunk(int i) { return chunks.get(i); }
 
     public void addPlayer(VassalsPlayer vp) {
-        vp.addTown(this, TownRanks.CITIZEN);
+        addPlayer(vp, getRank(1));
+    }
+
+    public void addPlayer(VassalsPlayer vp, PermClass perm) {
+        players.put(vp.getUUID(), perm);
+        vp.addTown(this, perm);
     }
 
 

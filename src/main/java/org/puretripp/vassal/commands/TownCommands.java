@@ -8,12 +8,14 @@ import org.puretripp.vassal.menus.submenus.SubclaimMenu;
 import org.puretripp.vassal.menus.TownshipMenu;
 import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.claiming.Residence;
+import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.SubCommand;
+import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class TownCommands {
@@ -40,7 +42,7 @@ public class TownCommands {
                 throw new IllegalArgumentException("Must include a Name!");
             }
             OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
-            if (vp.getRank(vp.getSelected()).getValue() >= 8 || target.hasPlayedBefore()) {
+            if (vp.getSelected().getPlayerRank(p.getUniqueId()).isCanInvite() && target.hasPlayedBefore()) {
                 VassalWorld.getPlayer((Player) target).addInvite(vp.getSelected());
                 ((Player) target).sendTitle(ChatColor.GREEN + "New Invite!", ChatColor.GREEN + p.getPlayer().getName() + "Has Invited You To a Town", 5, 30, 5);
             }
@@ -140,8 +142,7 @@ public class TownCommands {
                     name += (" " + args[i]);
                 }
             }
-            ArrayList<UUID> players = new ArrayList<UUID>();
-            players.add(p.getUniqueId());
+            HashMap<UUID, PermClass> players = new HashMap<UUID, PermClass>();
             Chunk c = p.getLocation().getChunk();
             if (VassalWorld.allLand.containsKey(c)) {
                 p.sendMessage("Chunk is Already Claimed!");
@@ -149,7 +150,7 @@ public class TownCommands {
             }
             Township t = new Township(name, p.getUniqueId(), 0, c, players);
             //Add Town to Player's Info
-            vp.addTown(t, TownRanks.LEADER);
+            t.addPlayer(vp, t.getRank(0));
             vp.setSelected(t);
             //Send indicators
             p.sendMessage("Township of " + name + " has been created!");

@@ -1,6 +1,5 @@
-package org.puretripp.vassal.utils.claiming;
+package org.puretripp.vassal.types;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -86,20 +85,15 @@ public class Residence {
         //3
         p.sendMessage("Executing: " + vertices.size());
         for (int i = 0; i < vertices.size() - 1; i++) {
-            p.sendMessage(ChatColor.GREEN + "Coords: " + getVertex(i).getX() + " " + getVertex(i).getZ());
             addLine(Residence.generateLine(vp, p, getVertex(i).clone(), getVertex(i + 1).clone()));
             addLine(Residence.generateLine(vp, p, getVertex(i).clone().add(new Vector(0, maxHeight, 0)),
                 getVertex(i + 1).clone().add(new Vector(0, maxHeight, 0))));
             addLine(Residence.generateLine(vp, p, getVertex(i).clone(),
                 getVertex(i).clone().add(new Vector(0, maxHeight, 0))));
         }
-        addLine(Residence.generateLine(vp, p,
-                getVertex(polygonSize() - 1).clone().add(new Vector(0, maxHeight, 0)),
-                getVertex(0).clone()));
         addLine(Residence.generateLine(vp, p, getVertex(polygonSize() - 1).clone(), getVertex(0).clone()));
-        addLine(Residence.generateLine(vp, p,
-                getVertex(polygonSize() - 1).clone().add(new Vector(0, maxHeight, 0)),
-                getVertex(vertices.size()).clone().add(new Vector(0, maxHeight, 0))));
+        addLine(Residence.generateLine(vp, p, getVertex(polygonSize() - 1).clone(), getVertex(polygonSize() - 1).clone().add(new Vector(0, maxHeight, 0))));
+        addLine(Residence.generateLine(vp, p, getVertex(0).clone().add(new Vector(0, maxHeight, 0)), getVertex(polygonSize() - 1).clone().add(new Vector(0, maxHeight, 0))));
     }
 
     public UUID getOwner() { return this.owner; }

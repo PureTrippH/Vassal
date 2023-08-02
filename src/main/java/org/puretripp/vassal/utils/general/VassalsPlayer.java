@@ -1,20 +1,18 @@
 package org.puretripp.vassal.utils.general;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.claiming.Residence;
-import org.puretripp.vassal.utils.runnables.LineRunnable;
+import org.puretripp.vassal.types.Residence;
+import org.puretripp.vassal.utils.claiming.perms.PermClass;
 
 import java.util.*;
 
 public class VassalsPlayer {
-    private HashMap<Township, TownRanks> memberInfo = new HashMap<Township, TownRanks>();
+    private HashMap<Township, PermClass> memberInfo = new HashMap<Township, PermClass>();
     private ArrayList<Township> invites = new ArrayList<Township>();
-
+    private ArrayList<Residence> ownedSubClaims = new ArrayList<Residence>();
     private ArrayList<BukkitRunnable> clientTasks = new ArrayList<>();
     public HashMap<String, Boolean> cooldowns = new HashMap<>();
     private Township selectedTown;
@@ -34,7 +32,7 @@ public class VassalsPlayer {
         return selectedTown;
     }
 
-    public void addTown(Township t, TownRanks rank) throws IllegalArgumentException {
+    public void addTown(Township t, PermClass rank) throws IllegalArgumentException {
         if(memberInfo.containsKey(t)) {
             throw new IllegalArgumentException("Already A Member Of The Given Town!");
         }
@@ -48,13 +46,7 @@ public class VassalsPlayer {
         return memberInfo.containsKey(t);
     }
 
-    public TownRanks getRank(Township t) {
-        return memberInfo.get(t);
-    }
 
-    public void changeRank(Township t, TownRanks rank) {
-        memberInfo.replace(t, rank);
-    }
 
     public Nation getNation() { return n; }
 
@@ -67,6 +59,9 @@ public class VassalsPlayer {
     public void addInvite(Township t) { invites.add(t); }
 
     public void removeInvite(Township t) { invites.remove(t); }
+
+    public void addResidence(Residence res) { ownedSubClaims.add(res); }
+    public void removeSubClaim(Residence res) { ownedSubClaims.remove(res); }
 
     public void addTask(BukkitRunnable run) { clientTasks.add(run); }
     public void clearTasks() {

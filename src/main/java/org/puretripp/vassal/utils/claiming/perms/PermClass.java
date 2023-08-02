@@ -9,6 +9,7 @@ public class PermClass {
     private boolean canRename = false;
     private boolean canManageClaimArea = false;
     private boolean canManagePolitics = false;
+    private boolean canInvite = false;
 
     public PermClass(String name) {
         this.name = name;
@@ -23,6 +24,7 @@ public class PermClass {
         this.canRename = true;
         this.canManageClaimArea = true;
         this.canManagePolitics = true;
+        this.canInvite = true;
     }
 
     public boolean isCanManagePolitics() {
@@ -87,5 +89,13 @@ public class PermClass {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isCanInvite() {
+        return canInvite;
+    }
+
+    public void setCanInvite(boolean canInvite) {
+        this.canInvite = canInvite;
     }
 }

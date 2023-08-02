@@ -4,7 +4,6 @@ import org.bukkit.*;
 import org.bukkit.block.Banner;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rotatable;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -13,12 +12,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.menus.submenus.SubclaimMenu;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.utils.claiming.LandChunk;
-import org.puretripp.vassal.utils.claiming.Residence;
+import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 import org.puretripp.vassal.utils.runnables.LineRunnable;
@@ -108,7 +106,7 @@ public class Events implements Listener {
         LandChunk c = VassalWorld.getLandChunkByChunk(e.getClickedBlock().getChunk());
         if (c == null) return;
         VassalsPlayer vp = VassalWorld.getPlayer(e.getPlayer());
-        if (vp.getIsSelectionMode() && vp.getRank(vp.getSelected()).getValue() > 8 && vp.cooldowns.getOrDefault("clickAgainCooldown", true)) {
+        if (vp.getIsSelectionMode() && vp.cooldowns.getOrDefault("clickAgainCooldown", true)) {
             Residence res = vp.getSelectedResidence();
             if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
                 e.getPlayer().openInventory(new SubclaimMenu(vp.getSelectedResidence(), vp.getSelected(), vp).getInv());

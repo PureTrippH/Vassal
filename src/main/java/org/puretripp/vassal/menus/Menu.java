@@ -1,9 +1,8 @@
 package org.puretripp.vassal.menus;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,7 +18,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.profile.PlayerProfile;
 import org.puretripp.vassal.main.Main;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -100,6 +101,55 @@ public class Menu implements Listener {
         }
         newIcon.setItemMeta(meta);
         return newIcon;
+    }
+
+    protected static ItemStack generateSkull(String name, String value, List<String> lore,
+                                             UUID playerName) {
+        OfflinePlayer p = Bukkit.getOfflinePlayer(playerName);
+        ItemStack newIcon = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) newIcon.getItemMeta();
+        meta.setDisplayName(name);
+        meta.setLore(lore);
+        meta.setOwner(p.getName());
+        NamespacedKey clickFunc = new NamespacedKey(Main.getPlugin(Main.class), "iconClickFunction");
+        PersistentDataContainer data = meta.getPersistentDataContainer();
+        data.set(clickFunc, PersistentDataType.STRING, value);
+        if (lore != null) {
+            meta.setLore(lore);
+        }
+        newIcon.setItemMeta(meta);
+        return newIcon;
+    }
+    protected static ItemStack generateCustomSkull(String name, String value, List<String> lore,
+                                             String texture) {
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
+        SkullMeta itemMeta = (SkullMeta) item.getItemMeta();
+        String url = ("http://textures.minecraft.net/texture/" + texture);
+        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
+        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
+        Field profileField = null;
+        try
+        {
+            profileField = itemMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(itemMeta, profile);
+        }
+        catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e)
+        {
+            Bukkit.getLogger().info(ChatColor.RED + e.getMessage());
+        }
+        item.setItemMeta(itemMeta);
+        NamespacedKey clickFunc = new NamespacedKey(Main.getPlugin(Main.class), "iconClickFunction");
+        PersistentDataContainer data = itemMeta.getPersistentDataContainer();
+        data.set(clickFunc, PersistentDataType.STRING, value);
+        itemMeta.setDisplayName(name);
+        if (lore != null) {
+            itemMeta.setLore(lore);
+        }
+        item.setItemMeta(itemMeta);
+        System.out.println(item);
+        return item;
     }
 
 

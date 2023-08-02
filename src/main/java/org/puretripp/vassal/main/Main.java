@@ -61,7 +61,6 @@ public final class Main extends JavaPlugin {
         }
         econ = rsp.getProvider();
         return econ != null;
-        return econ != null;
     }
 
     public Economy getEconomy() {
