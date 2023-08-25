@@ -1,5 +1,6 @@
 package org.puretripp.vassal.types.townships;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -8,19 +9,18 @@ import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.utils.claiming.ChunkType;
 import org.puretripp.vassal.utils.claiming.LandChunk;
 import org.puretripp.vassal.types.Residence;
+import org.puretripp.vassal.utils.claiming.Permissable;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.UUID;
+import java.net.SocketException;
+import java.util.*;
 
 /**
  * A Standard town.
  */
-public class Township {
+public class Township implements Permissable {
     public static HashMap<String, Township> towns = new HashMap<String, Township>();
     //private static transient final long serialVersionUID = -1681012206529286330L;
     private UUID leader;
@@ -36,11 +36,12 @@ public class Township {
     private double bal;
 
     /**
-     * Constructs a full new town with no defaults. Deep copies everything.
-     * @param name TODO
-     * @param chunks TODO
-     * @param players TODO
-     * @param bal TODO
+     * Constructor of a Township with Land
+     * @param name String name of Township
+     * @param leader UUID leader of the town
+     * @param bal double balance of the town
+     * @param chunks ArrayList of Chunks in town
+     * @param players players in the new township
      */
     public Township(String name, UUID leader, double bal, ArrayList<LandChunk> chunks, HashMap<UUID, PermClass> players) {
         this.name = name;
@@ -53,6 +54,14 @@ public class Township {
         this.permClasses.add(new PermClass("Citizen"));
     }
 
+    /**
+     * Constructor of a landless Township
+     * @param name String name of Township
+     * @param leader UUID leader of the town
+     * @param bal double balance of the town
+     * @param c theOrigin Chunk
+     * @param players players in the new township
+     */
     public Township(String name, UUID leader, double bal, Chunk c, HashMap<UUID, PermClass> players) {
         this.name = name;
         this.leader = leader;
@@ -68,6 +77,10 @@ public class Township {
         VassalWorld.allLand.put(c, lc);
     }
 
+    /**
+     * Copy Constructor for Townships
+     * @param toCopy Township to Copy
+     */
     public Township(Township toCopy) {
         this.name = toCopy.name;
         this.leader = toCopy.leader;
@@ -110,7 +123,7 @@ public class Township {
     public static Township getTownByName(String s) {
         return towns.get(s);
     }
-    public Set<UUID> getPlayers() { return players.keySet(); }
+    public Set<UUID> getPlayersUUID() { return players.keySet(); }
     public Nation getNation() { return nation; }
     public void setNation(Nation nation) { this.nation = nation; };
     public String getName() { return name; }
@@ -130,17 +143,94 @@ public class Township {
     }
 
     public LandChunk getChunk(int i) { return chunks.get(i); }
-
-    public void addPlayer(VassalsPlayer vp) {
-        addPlayer(vp, getRank(1));
+    /**
+     * Adds a Player to the Rank map
+     * @param vp VassalPlayer to add
+     * @param pc PermClass to initialize the player with
+     * @exception IllegalArgumentException When arguments are null
+     */
+    public void addPlayer(VassalsPlayer vp, PermClass pc) {
+        if (vp == null || pc == null) throw new IllegalArgumentException("Arguments can't be null!");
+        players.put(vp.getUUID(), pc);
+        vp.addTown(this, pc);
+    }
+    /**
+     * Sets a player's perm class
+     * @param vp VassalPlayer to set the rank
+     * @param pc PermClass to set the player as
+     * @exception IllegalArgumentException When arguments are null
+     */
+    public void setPlayerRank(VassalsPlayer vp, PermClass pc) {
+        if (vp == null || pc == null) throw new IllegalArgumentException("Arguments can't be null!");
+        players.replace(vp.getUUID(), pc);
     }
 
-    public void addPlayer(VassalsPlayer vp, PermClass perm) {
-        players.put(vp.getUUID(), perm);
-        vp.addTown(this, perm);
+    /**
+     * Gets The Player's Class Rank in the permissable entity
+     * @param vp Vassal Player with the rank you want to get
+     * @return PermClass Rank of the Class
+     * @exception IllegalArgumentException When arguments are null
+     */
+    public PermClass getPlayerRank(VassalsPlayer vp) {
+        if (vp == null) throw new IllegalArgumentException("Arguments can't be null!");
+        return players.get(vp.getUUID());
+    }
+
+    /**
+     *
+     * @return Set of all of the players as the Player Object
+     */
+    public Set<Player> getPlayersObjs() {
+        HashSet<Player> playerList = new HashSet<Player>();
+        Iterator<UUID> it = players.keySet().iterator();
+        UUID curr = it.next();
+        while (it.hasNext()) {
+            playerList.add(Bukkit.getPlayer(curr));
+            curr = it.next();
+        }
+        return playerList;
+    }
+
+    /**
+     * Gets The Player's Class Rank in the permissable entity
+     * @param vp VassalPlayer to get the rank
+     * @return PermClass Rank of the Class
+     * @exception IllegalArgumentException When arguments are null
+     */
+    public PermClass getRank(VassalsPlayer vp) {
+        if (vp == null) throw new IllegalArgumentException("Arguments can't be null!");
+        return players.get(vp);
+    }
+
+    /**
+     * Adds A Perm Class To The Permissable Entity
+     * @param pc PermClass to Add
+     */
+    public void addPermClass(PermClass pc) {
+        if (pc == null) throw new IllegalArgumentException("Arguments can't be null!");
+        permClasses.add(pc);
+    }
+
+    /**
+     * Removes a Perm Class from the Permissiable Entity
+     * @param pc PermClass to Remove
+     * @return PermClass that was removed
+     */
+    public PermClass removePermClass(PermClass pc) {
+        if (pc == null) throw new IllegalArgumentException("Arguments can't be null!");
+        if (permClasses.remove(pc)) {
+            return pc;
+        } else {
+            throw new NoSuchElementException("Perm Class Was Not Found!");
+        }
     }
 
 
+    /**
+     * Checks if towns are equal
+     * @param o Object comparing against the Town
+     * @return boolean is the object equal to this town?
+     */
     @Override
     public boolean equals(Object o) {
         if(o instanceof Township) {

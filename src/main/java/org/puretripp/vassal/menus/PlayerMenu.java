@@ -75,14 +75,14 @@ public class PlayerMenu extends Menu {
                         Player p = ((Player) e.getWhoClicked());
                         p.sendTitle(ChatColor.GREEN + "Welcome!", ChatColor.GREEN + "To the Town of " + you.getInvites()[index].getName(), 5, 30, 5);
                         p.playSound(p, Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1f, 2f);
-                        you.getInvites()[index].addPlayer(you);
+                        you.getInvites()[index].addPlayer(you, you.getInvites()[index].getRank(1));
                         you.removeInvite(you.getInvites()[index]);
                     } else if (e.isRightClick()) {
                         e.getWhoClicked().closeInventory();
                         Player p = ((Player) e.getWhoClicked());
                         p.sendTitle(ChatColor.RED + "Rejected Invite!", ChatColor.RED + "To the Town of " + you.getInvites()[index].getName(), 5, 30, 5);
                         p.playSound(p, Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1f, 2f);
-                        you.getInvites()[index].addPlayer(you);
+                        you.getInvites()[index].addPlayer(you, you.getInvites()[index].getRank(1));
                         you.removeInvite(you.getInvites()[index]);
                     }
                 }

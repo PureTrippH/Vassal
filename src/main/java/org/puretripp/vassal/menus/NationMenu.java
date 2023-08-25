@@ -43,22 +43,20 @@ public class NationMenu extends Menu {
 
     @EventHandler
     public void invClick(final InventoryClickEvent e) {
-        if (e.getInventory().equals(inv)) {
-            if (e.getCurrentItem() != null) {
-                if (e.getCurrentItem().getItemMeta() instanceof BannerMeta) {
-                    final Player p = (Player) e.getWhoClicked();
-                    if (n != null) {
-                        n.setBannerType(e.getCurrentItem().getType());
-                        n.setBanner((BannerMeta) e.getCurrentItem().getItemMeta());
-                        p.sendMessage("Nation Banner Set");
-                    } else {
-                        p.sendMessage("MUST BE IN A NATION TO DO THAT!");
-                    }
-                    p.updateInventory();
-                    p.openInventory(inv);
-                }
-                e.setCancelled(true);
+        if (!e.getInventory().equals(inv)) return;
+        if (e.getCurrentItem() == null) return;
+        if (e.getCurrentItem().getItemMeta() instanceof BannerMeta) {
+            final Player p = (Player) e.getWhoClicked();
+            if (n != null) {
+                n.setBannerType(e.getCurrentItem().getType());
+                n.setBanner((BannerMeta) e.getCurrentItem().getItemMeta());
+                p.sendMessage("Nation Banner Set");
+            } else {
+                p.sendMessage("MUST BE IN A NATION TO DO THAT!");
             }
+            p.updateInventory();
+            p.openInventory(inv);
         }
+        e.setCancelled(true);
     }
 }
