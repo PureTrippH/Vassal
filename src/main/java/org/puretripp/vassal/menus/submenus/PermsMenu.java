@@ -86,8 +86,4 @@ public class PermsMenu extends Menu {
             }
         }
     }
-
-    private class RankCreation<T super > extends Menu {
-        private PermClass perm;
-
 }

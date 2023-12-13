@@ -29,7 +29,7 @@ import java.util.UUID;
  * @author Tripp H.
  * @version 1.0
  */
-public class Menu implements Listener {
+public abstract class Menu implements Listener {
     protected final Inventory inv;
     private Plugin pl = Main.getPlugin(Main.class);
     protected ArrayList<ItemStack> contents = new ArrayList<ItemStack>();
@@ -59,7 +59,7 @@ public class Menu implements Listener {
 
 
     /**
-     * Primes inventory with placeholders and next Page
+     * Priminventory with placeholders and next Page
      */
     public void initializeItems(int page) {
         initializeItems(page, false);
