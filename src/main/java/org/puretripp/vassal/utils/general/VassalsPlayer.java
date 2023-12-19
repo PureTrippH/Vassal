@@ -1,5 +1,6 @@
 package org.puretripp.vassal.utils.general;
 
+import net.bytebuddy.dynamic.scaffold.MethodGraph;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.puretripp.vassal.types.Nation;
@@ -7,6 +8,8 @@ import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.interfaces.GUIMenu;
+import org.puretripp.vassal.utils.interfaces.Invitable;
+import org.puretripp.vassal.utils.interfaces.InviteDeliverer;
 
 import java.util.*;
 
@@ -14,9 +17,8 @@ import java.util.*;
  * Wrapper for a Player
  * This so Violates SRP but IDC
  */
-public class VassalsPlayer {
+public class VassalsPlayer implements Invitable {
     private HashMap<Township, PermClass> memberInfo = new HashMap<Township, PermClass>();
-    private ArrayList<Township> invites = new ArrayList<Township>();
     private ArrayList<Residence> ownedSubClaims = new ArrayList<Residence>();
     private ArrayList<BukkitRunnable> clientTasks = new ArrayList<>();
     public HashMap<String, Boolean> cooldowns = new HashMap<>();
@@ -24,7 +26,9 @@ public class VassalsPlayer {
     private Residence selectedResidence;
     private Nation n;
     private UUID uuid;
+    //Holds The Current Menu Stack
     private Deque<GUIMenu> menuStack = new LinkedList<GUIMenu>();
+    private ArrayList<InviteDeliverer> invites;
 
     public VassalsPlayer(UUID uuid) {
         this.uuid = uuid;
@@ -62,10 +66,6 @@ public class VassalsPlayer {
 
     public void setNation(Nation n) { this.n = n; }
 
-    public void addInvite(Township t) { invites.add(t); }
-
-    public void removeInvite(Township t) { invites.remove(t); }
-
     public void addResidence(Residence res) { ownedSubClaims.add(res); }
     public void removeSubClaim(Residence res) { ownedSubClaims.remove(res); }
 
@@ -87,8 +87,6 @@ public class VassalsPlayer {
         menuStack.pop();
         menuStack.peek().open(this);
     }
-
-    public Township[] getInvites() { return invites.toArray(new Township[invites.size()]); }
     @Override
     public boolean equals(Object o) {
         if(o instanceof VassalsPlayer) {
@@ -106,5 +104,33 @@ public class VassalsPlayer {
 
     public void setSelectedResidence(Residence selectedResidence) {
         this.selectedResidence = selectedResidence;
+    }
+
+    @Override
+    public void addInvite(InviteDeliverer inviter) {
+        if (inviter == null) throw new IllegalArgumentException("param can not be null!");
+        invites.add(inviter);
+    }
+
+    @Override
+    public void acceptInvite(InviteDeliverer inviter) {
+        inviter.addToInviter(this);
+        this.invites.remove(inviter);
+    }
+
+
+    @Override
+    public void rejectInvite(InviteDeliverer inviter) {
+        inviter.removeInvite(this);
+        this.invites.remove(inviter);
+    }
+
+    @Override
+    public InviteDeliverer getInvite(int index) {
+        return this.invites.get(index);
+    }
+    @Override
+    public List<InviteDeliverer> getAllInvites() {
+        return invites;
     }
 }

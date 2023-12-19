@@ -5,9 +5,12 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.puretripp.vassal.types.Nation;
+import org.puretripp.vassal.types.Vassal;
 import org.puretripp.vassal.utils.claiming.ChunkType;
 import org.puretripp.vassal.utils.claiming.LandChunk;
 import org.puretripp.vassal.types.Residence;
+import org.puretripp.vassal.utils.interfaces.Invitable;
+import org.puretripp.vassal.utils.interfaces.InviteDeliverer;
 import org.puretripp.vassal.utils.interfaces.Permissable;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.general.VassalWorld;
@@ -18,7 +21,7 @@ import java.util.*;
 /**
  * A Standard town.
  */
-public class Township implements Permissable {
+public class Township implements Permissable, InviteDeliverer {
     public static HashMap<String, Township> towns = new HashMap<String, Township>();
     //private static transient final long serialVersionUID = -1681012206529286330L;
     private UUID leader;
@@ -250,4 +253,30 @@ public class Township implements Permissable {
         return false;
     }
 
+    @Override
+    public void addToInviter(Invitable inv) {
+        if (inv == null) throw new IllegalArgumentException("Arguments can't be null!");
+        if (!(inv instanceof VassalsPlayer)) throw new IllegalArgumentException("Invited Must Be a Player!");
+        VassalsPlayer vp = (VassalsPlayer) inv;
+        players.put(vp.getUUID(), permClasses.get(0));
+        vp.addTown(this, permClasses.get(0));
+    }
+
+    @Override
+    public void removeInvite(Invitable inv) {
+        if (inv == null) throw new IllegalArgumentException("Arguments can't be null!");
+        if (!(inv instanceof VassalsPlayer)) throw new IllegalArgumentException("Invited Must Be a Player!");
+        VassalsPlayer vp = (VassalsPlayer) inv;
+        invites.remove(inv);
+
+
+    }
+
+    @Override
+    public void sendInvite(Invitable inv) {
+        if (inv == null) throw new IllegalArgumentException("Arguments can't be null!");
+        if (!(inv instanceof VassalsPlayer)) throw new IllegalArgumentException("Invited Must Be a Player!");
+        VassalsPlayer vp = (VassalsPlayer) inv;
+        vp.addInvite(this);
+    }
 }

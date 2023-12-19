@@ -49,7 +49,6 @@ public abstract class Menu implements Listener, GUIMenu {
         inv = Bukkit.createInventory(null, 9*3, name);
         initializeItems(page);
         pl.getServer().getPluginManager().registerEvents(this, pl);
-        Bukkit.getLogger().info(ChatColor.RED + "VASSALS: 1 Clicked!!!");
     }
 
     /**

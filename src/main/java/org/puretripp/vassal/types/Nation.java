@@ -13,12 +13,16 @@ import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 import java.util.*;
 
+/**
+ * A Nation That Represents the Township Graph & Total Nation Properties
+ * @Version 1.0
+ */
 public class Nation implements Permissable {
 
     private String name;
     private Material bannerType = Material.WHITE_BANNER;
     private BannerMeta banner;
-    private int cityCount;
+    private Set<Township> adjacencyList;
     private GovStyles style;
 
     private int nationBal;
@@ -40,10 +44,10 @@ public class Nation implements Permissable {
         } else {
             this.banner = banner;
         }
-        this.cityCount = cityCount;
         this.style = style;
         this.leaders = leaders;
         this.council = council;
+        this.adjacencyList = new HashSet<Township>();
     }
     /**
      * Adds a Player to the Rank map
