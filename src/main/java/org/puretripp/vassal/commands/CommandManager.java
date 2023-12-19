@@ -4,18 +4,21 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.utils.SubCommand;
 
 import java.awt.*;
-import java.util.HashMap;
+import java.util.*;
+import java.util.List;
 
-public class CommandManager implements CommandExecutor {
-    //Efficiency: O(n) to run help command. External Collision. KEEP THAT IN MIND!
+public class CommandManager implements CommandExecutor, TabExecutor {
     private String msgPrefix = ChatColor.of(new Color(140, 212, 191)) + "Vassals: ";
     private static HashMap<String, SubCommand> commands = new HashMap<>();
     private Main plugin = Main.getPlugin(Main.class);
+    Set<String> possibleCommands;
 
     public CommandManager() {
         plugin.getCommand("vassal").setExecutor(this);
@@ -27,6 +30,8 @@ public class CommandManager implements CommandExecutor {
         this.commands.put("claim", new TownCommands.claimCommand());
         this.commands.put("subclaim", new TownCommands.subclaimCommand());
         this.commands.put("menu", new TownCommands.menu());
+        this.possibleCommands = this.commands.keySet();
+
     }
 
     public static HashMap<String, SubCommand> getCommands() {
@@ -57,5 +62,16 @@ public class CommandManager implements CommandExecutor {
             p.sendMessage(msgPrefix + e.getMessage());
         }
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        final List<String> completions = new ArrayList<>();
+        if (args.length == 1) {
+            StringUtil.copyPartialMatches(args[0], possibleCommands, completions);
+            Collections.sort(completions);
+            return completions;
+        }
+        return Collections.EMPTY_LIST;
     }
 }

@@ -28,7 +28,7 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         this.getCommand("vassal").setExecutor(new CommandManager());
-        currentInstance = new VassalWorld();
+        currentInstance = VassalWorld.getWorldInstance();
         //Register Events
         getServer().getPluginManager().registerEvents(new Events(), this);
 

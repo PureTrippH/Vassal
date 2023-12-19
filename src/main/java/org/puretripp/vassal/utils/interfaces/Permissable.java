@@ -1,4 +1,4 @@
-package org.puretripp.vassal.utils.claiming;
+package org.puretripp.vassal.utils.interfaces;
 
 import org.bukkit.entity.Player;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;

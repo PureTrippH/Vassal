@@ -28,7 +28,7 @@ public class NationsMaster implements CommandExecutor {
             p.sendMessage("Vassals: Command Not Found");
             return true;
         }
-        VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
+        VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
         try {
             switch (args[0].toLowerCase()) {
                 case "invites":
@@ -52,7 +52,7 @@ public class NationsMaster implements CommandExecutor {
                         throw new IllegalArgumentException("You can not create a Nation when you are in a nation!");
                     }
                     ArrayList<VassalsPlayer> leaders = new ArrayList<VassalsPlayer>();
-                    leaders.add(VassalWorld.getPlayer(p));
+                    leaders.add(VassalWorld.getWorldInstance().getPlayer(p));
 
                     ArrayList<Township> towns = new ArrayList<Township>();
                     towns.add(vp.getSelected());
@@ -66,7 +66,7 @@ public class NationsMaster implements CommandExecutor {
                     */
                     //To go Into Event Handler
                     vp.setNation(newNation);
-                    VassalWorld.nations.add(newNation);
+                    VassalWorld.getWorldInstance().nations.add(newNation);
                     for (int i = 0; i < towns.size(); i++) {
                         towns.get(i).setNation(newNation);
                     }

@@ -6,7 +6,6 @@ import org.puretripp.vassal.menus.HelpMenu;
 import org.puretripp.vassal.menus.PlayerMenu;
 import org.puretripp.vassal.menus.submenus.SubclaimMenu;
 import org.puretripp.vassal.menus.TownshipMenu;
-import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.SubCommand;
@@ -14,7 +13,6 @@ import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -23,7 +21,7 @@ public class TownCommands {
         public final String name = "Player Menu";
         public final String desc = ChatColor.WHITE + "Open Up The Personal Player Menu\n"+ ChatColor.GREEN + "Usage: " + ChatColor.WHITE + "/vassal pm";
         public void onCommand(Player p, String[] args) {
-            VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
+            VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
             p.openInventory((new PlayerMenu(vp)).getInv());
         }
         public String getName() { return name; }
@@ -37,13 +35,13 @@ public class TownCommands {
         public final String name = "Invite";
         public final String desc = ChatColor.WHITE + "Sends an invite to the Targetted Player\n" + ChatColor.GREEN + "Usage: " + ChatColor.WHITE + "/vassal invite <player>";
         public void onCommand(Player p, String[] args) {
-            VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
+            VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
             if (args.length <= 1) {
                 throw new IllegalArgumentException("Must include a Name!");
             }
             OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
             if (vp.getSelected().getPlayerRank(p.getUniqueId()).isCanInvite() && target.hasPlayedBefore()) {
-                VassalWorld.getPlayer((Player) target).addInvite(vp.getSelected());
+                VassalWorld.getWorldInstance().getPlayer((Player) target).addInvite(vp.getSelected());
                 ((Player) target).sendTitle(ChatColor.GREEN + "New Invite!", ChatColor.GREEN + p.getPlayer().getName() + "Has Invited You To a Town", 5, 30, 5);
             }
         }
@@ -78,7 +76,7 @@ public class TownCommands {
         public final String desc = ChatColor.WHITE + "Shows the border of the currently selected claim\n" + ChatColor.GREEN + "Usage: " + ChatColor.WHITE + "/vassal display";
 
         public void onCommand(Player p, String[] args) {
-            VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
+            VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
             vp.getSelected().display(p);
         }
         public String getName() {
@@ -95,7 +93,7 @@ public class TownCommands {
         public final String desc = ChatColor.WHITE + "Claims a chunk for your current town\n" + ChatColor.GREEN + "Usage: " + ChatColor.WHITE + "/vassal claim";
 
         public void onCommand(Player p, String[] args) {
-            VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
+            VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
             try {
                 vp.getSelected().claimChunk(p.getLocation().getChunk());
                 vp.clearTasks();
@@ -117,7 +115,7 @@ public class TownCommands {
         public final String desc = ChatColor.WHITE + "See Your Town's Stats\n" + ChatColor.GREEN + "Usage: " + ChatColor.WHITE + "/vassal menu";
 
         public void onCommand(Player p, String[] args) {
-            VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
+            VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
             p.openInventory((new TownshipMenu(vp.getSelected(), vp)).getInv());
         }
         public String getName() { return name; }
@@ -132,7 +130,7 @@ public class TownCommands {
         public final String desc = ChatColor.WHITE + "Create a New Town\n" + ChatColor.GREEN + "Usage: " + ChatColor.WHITE + "/vassal create (town name spaces included)";
 
         public void onCommand(Player p, String[] args) {
-            VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
+            VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
             if (args.length <= 1) {
                 throw new IllegalArgumentException("Must include a Name!");
             }
@@ -144,7 +142,7 @@ public class TownCommands {
             }
             HashMap<UUID, PermClass> players = new HashMap<UUID, PermClass>();
             Chunk c = p.getLocation().getChunk();
-            if (VassalWorld.allLand.containsKey(c)) {
+            if (VassalWorld.getWorldInstance().allLand.containsKey(c)) {
                 p.sendMessage("Chunk is Already Claimed!");
                 return;
             }
@@ -169,7 +167,7 @@ public class TownCommands {
         public final String desc = ChatColor.WHITE + "Claims a 2d, infinite vertex subclaim\n" + ChatColor.GREEN + "Usage: " + ChatColor.WHITE + "/vassal subclaim <toggle/create>";;
 
         public void onCommand(Player p, String[] args) {
-            VassalsPlayer vp = VassalWorld.onlinePlayers.get(p.getUniqueId());
+            VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
             if (args.length <= 1) {
                 throw new IllegalArgumentException("Must include a Name!");
             }

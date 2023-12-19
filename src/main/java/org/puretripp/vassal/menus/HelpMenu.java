@@ -6,12 +6,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.puretripp.vassal.utils.SubCommand;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class HelpMenu extends Menu {
+public class HelpMenu extends Menu{
 
     public HelpMenu(HashMap<String, SubCommand > commands) {
         super( "Help Menu");

@@ -1,14 +1,19 @@
 package org.puretripp.vassal.utils.general;
 
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.puretripp.vassal.types.Nation;
-import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;
+import org.puretripp.vassal.utils.interfaces.GUIMenu;
 
 import java.util.*;
 
+/**
+ * Wrapper for a Player
+ * This so Violates SRP but IDC
+ */
 public class VassalsPlayer {
     private HashMap<Township, PermClass> memberInfo = new HashMap<Township, PermClass>();
     private ArrayList<Township> invites = new ArrayList<Township>();
@@ -19,6 +24,7 @@ public class VassalsPlayer {
     private Residence selectedResidence;
     private Nation n;
     private UUID uuid;
+    private Deque<GUIMenu> menuStack = new LinkedList<GUIMenu>();
 
     public VassalsPlayer(UUID uuid) {
         this.uuid = uuid;
@@ -68,6 +74,18 @@ public class VassalsPlayer {
         for (BukkitRunnable task : clientTasks) {
             task.cancel();
         }
+    }
+    public void pushMenu(GUIMenu menu) {
+        menuStack.push(menu);
+        menu.open(this);
+    }
+    public void popMenu() {
+        if (menuStack.size() == 1) {
+            menuStack.clear();
+            return;
+        }
+        menuStack.pop();
+        menuStack.peek().open(this);
     }
 
     public Township[] getInvites() { return invites.toArray(new Township[invites.size()]); }

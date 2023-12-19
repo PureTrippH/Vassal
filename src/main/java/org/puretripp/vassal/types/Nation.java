@@ -7,8 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.puretripp.vassal.types.governments.GovStyles;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.claiming.LandChunk;
-import org.puretripp.vassal.utils.claiming.Permissable;
+import org.puretripp.vassal.utils.interfaces.Permissable;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 

@@ -12,7 +12,6 @@ import org.bukkit.plugin.Plugin;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.menus.submenus.PermsMenu;
 import org.puretripp.vassal.menus.submenus.SubclaimMenu;
-import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.general.VassalsPlayer;

@@ -12,7 +12,6 @@ import java.awt.*;
 import java.util.HashMap;
 
 public class NationCommandManager implements CommandExecutor {
-    //Efficiency: O(n) to run help command. External Collision. KEEP THAT IN MIND!
     private String msgPrefix = ChatColor.of(new Color(140, 212, 191)) + "Vassals: ";
     private static HashMap<String, SubCommand> commands = new HashMap<>();
     private Main plugin = Main.getPlugin(Main.class);

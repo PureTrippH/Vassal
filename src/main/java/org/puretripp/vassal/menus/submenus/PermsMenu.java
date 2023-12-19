@@ -1,7 +1,6 @@
 package org.puretripp.vassal.menus.submenus;
 
 import org.bukkit.*;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -11,15 +10,14 @@ import org.bukkit.persistence.PersistentDataType;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.menus.Menu;
 import org.puretripp.vassal.types.Nation;
-import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
+import org.puretripp.vassal.utils.interfaces.GUIMenu;
 
 import java.util.UUID;
 
-public class PermsMenu extends Menu {
+public class PermsMenu extends Menu implements GUIMenu {
     private Township town;
     private Nation nation;
     private VassalsPlayer target;
@@ -43,6 +41,11 @@ public class PermsMenu extends Menu {
         super.contents.add(list);
         super.contents.add(promote);
         super.refreshContents();
+    }
+
+    @Override
+    public void open(VassalsPlayer p) {
+        Bukkit.getPlayer(p.getUUID()).openInventory(this.inv);
     }
 
 
@@ -70,19 +73,16 @@ public class PermsMenu extends Menu {
 
         @EventHandler
         public void invClick(final InventoryClickEvent e) {
-            if (e.getInventory().equals(inv)) {
-                if (e.getCurrentItem() != null) {
-                    if (e.getCurrentItem().getType() == Material.PLAYER_HEAD) {
-                        SkullMeta meta = (SkullMeta) e.getCurrentItem().getItemMeta();
-                        PersistentDataContainer data = meta.getPersistentDataContainer();
-                        if((data.get(key, PersistentDataType.STRING).substring(0, 6)).equals("Perms_")) {
-                            e.getWhoClicked().sendMessage(data.get(key, PersistentDataType.STRING));
-                            OfflinePlayer p = Bukkit.getOfflinePlayer(
-                                    UUID.fromString(data.get(key, PersistentDataType.STRING).substring(6)));
-                            target = VassalWorld.onlinePlayers.get(e.getWhoClicked().getUniqueId());
-                        }
-                    }
-                }
+            if (!e.getInventory().equals(inv)) return;
+            if (e.getCurrentItem() == null) return;
+            if (e.getCurrentItem().getType() != Material.PLAYER_HEAD) return;
+            SkullMeta meta = (SkullMeta) e.getCurrentItem().getItemMeta();
+            PersistentDataContainer data = meta.getPersistentDataContainer();
+            if((data.get(key, PersistentDataType.STRING).substring(0, 6)).equals("Perms_")) {
+                e.getWhoClicked().sendMessage(data.get(key, PersistentDataType.STRING));
+                OfflinePlayer p = Bukkit.getOfflinePlayer(
+                        UUID.fromString(data.get(key, PersistentDataType.STRING).substring(6)));
+                target = VassalWorld.getWorldInstance().onlinePlayers.get(e.getWhoClicked().getUniqueId());
             }
         }
     }

@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,6 +18,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.profile.PlayerProfile;
 import org.puretripp.vassal.main.Main;
+import org.puretripp.vassal.utils.general.VassalWorld;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
+import org.puretripp.vassal.utils.interfaces.GUIMenu;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -29,7 +33,7 @@ import java.util.UUID;
  * @author Tripp H.
  * @version 1.0
  */
-public abstract class Menu implements Listener {
+public abstract class Menu implements Listener, GUIMenu {
     protected final Inventory inv;
     private Plugin pl = Main.getPlugin(Main.class);
     protected ArrayList<ItemStack> contents = new ArrayList<ItemStack>();
@@ -166,7 +170,12 @@ public abstract class Menu implements Listener {
 
     }
 
-
+    @EventHandler
+    public void onInvOpen(final InventoryOpenEvent e) {
+        if (!e.getInventory().equals(inv)) return;
+        VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(e.getPlayer().getUniqueId());
+        vp.pushMenu(this);
+    }
 
     @EventHandler
     public void onInvClick(final InventoryClickEvent e) {
@@ -199,5 +208,10 @@ public abstract class Menu implements Listener {
     }
 
     public Inventory getInv() { return inv; }
+
+    @Override
+    public void open(VassalsPlayer p) {
+        p.pushMenu(this);
+    }
 
 }

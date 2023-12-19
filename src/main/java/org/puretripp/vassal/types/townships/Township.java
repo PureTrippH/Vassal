@@ -5,16 +5,14 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.puretripp.vassal.types.Nation;
-import org.puretripp.vassal.types.ranks.TownRanks;
 import org.puretripp.vassal.utils.claiming.ChunkType;
 import org.puretripp.vassal.utils.claiming.LandChunk;
 import org.puretripp.vassal.types.Residence;
-import org.puretripp.vassal.utils.claiming.Permissable;
+import org.puretripp.vassal.utils.interfaces.Permissable;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
-import java.net.SocketException;
 import java.util.*;
 
 /**
@@ -74,7 +72,7 @@ public class Township implements Permissable {
         this.permClasses.add(new PermClass("Citizen"));
         LandChunk lc = new LandChunk(c, leader, this, ChunkType.CAPITAL);
         chunks.add(lc);
-        VassalWorld.allLand.put(c, lc);
+        VassalWorld.getWorldInstance().allLand.put(c, lc);
     }
 
     /**
@@ -91,13 +89,21 @@ public class Township implements Permissable {
 
     //TODO: Check for Adjacent Chunks/Buffer Regions
     public void claimChunk(Chunk c) throws NoSuchFieldException {
-        if(!this.chunks.contains(VassalWorld.getLandChunkByChunk(c))) {
+        if(!this.chunks.contains(VassalWorld.getWorldInstance().getLandChunkByChunk(c))) {
             LandChunk newClaim = new LandChunk(c, null, this, ChunkType.DEFAULT);
-            VassalWorld.allLand.put(c, newClaim);
+            VassalWorld.getWorldInstance().allLand.put(c, newClaim);
             chunks.add(newClaim);
         } else {
             throw new NoSuchFieldException("Chunk is Already Claimed!");
         }
+    }
+
+    public List<UUID> getPlayers() {
+        ArrayList<UUID> uuidList = new ArrayList<>();
+        for (Map.Entry<UUID, PermClass> entry : players.entrySet()) {
+            uuidList.add(entry.getKey());
+        }
+        return uuidList;
     }
 
     public void display(Player p) {
@@ -106,16 +112,16 @@ public class Township implements Permissable {
             Chunk c = chunks.get(i).getChunk();
             chunks.get(i).displayChunk(p,
                 //North: Subtract 1 from Chunk z
-                !chunks.contains(VassalWorld.getLandChunkByChunk(new Location(c.getWorld(),
+                !chunks.contains(VassalWorld.getWorldInstance().getLandChunkByChunk(new Location(c.getWorld(),
                     c.getX() * 16, 64, (c.getZ() - 1) * 16).getChunk())),
                 //South: Add 1 to Chunk z
-                !chunks.contains(VassalWorld.getLandChunkByChunk(new Location(c.getWorld(),
+                !chunks.contains(VassalWorld.getWorldInstance().getLandChunkByChunk(new Location(c.getWorld(),
                     c.getX() * 16 , 64, (c.getZ() + 1) * 16).getChunk())),
                 //East: Add 1 to Chunk X
-                !chunks.contains(VassalWorld.getLandChunkByChunk(new Location(c.getWorld(),
+                !chunks.contains(VassalWorld.getWorldInstance().getLandChunkByChunk(new Location(c.getWorld(),
                     (c.getX() + 1) * 16, 64, c.getZ() * 16).getChunk())),
                 //West Subtract 1 from Chunk X
-                !chunks.contains(VassalWorld.getLandChunkByChunk(new Location(c.getWorld(),
+                !chunks.contains(VassalWorld.getWorldInstance().getLandChunkByChunk(new Location(c.getWorld(),
                     (c.getX() - 1) * 16, 64, c.getZ() * 16).getChunk()))
             );
         }

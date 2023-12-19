@@ -1,4 +1,4 @@
-package org.puretripp.vassal.utils.general;
+package org.puretripp.vassal.utils.interfaces;
 
 import java.util.ArrayList;
 

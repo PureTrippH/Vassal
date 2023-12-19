@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.plugin.Plugin;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.types.Nation;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 public class NationMenu extends Menu {
     Nation n;
@@ -59,4 +60,5 @@ public class NationMenu extends Menu {
         }
         e.setCancelled(true);
     }
+
 }
