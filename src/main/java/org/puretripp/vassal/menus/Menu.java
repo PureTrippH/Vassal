@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
@@ -88,6 +89,7 @@ public abstract class Menu implements Listener, GUIMenu {
             rightMeta.setOwner("MHF_ArrowRight");
             rightArrow.setItemMeta(rightMeta);
             inv.setItem(17, rightArrow);
+            inv.setItem(22, new ItemStack(Material.BARRIER));
         }
     }
 
@@ -170,13 +172,6 @@ public abstract class Menu implements Listener, GUIMenu {
     }
 
     @EventHandler
-    public void onInvOpen(final InventoryOpenEvent e) {
-        if (!e.getInventory().equals(inv)) return;
-        VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(e.getPlayer().getUniqueId());
-        vp.pushMenu(this);
-    }
-
-    @EventHandler
     public void onInvClick(final InventoryClickEvent e) {
         if (e.getInventory().equals(inv)) {
             final ItemStack clickedItem = e.getCurrentItem();
@@ -195,6 +190,10 @@ public abstract class Menu implements Listener, GUIMenu {
                 inv.clear();
                 initializeItems(page);
             }
+            if(e.getRawSlot() == 22) {
+                VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
+                vp.popMenu();
+            }
             e.setCancelled(true);
         }
     }
@@ -210,7 +209,7 @@ public abstract class Menu implements Listener, GUIMenu {
 
     @Override
     public void open(VassalsPlayer p) {
-        p.pushMenu(this);
+        Bukkit.getPlayer(p.getUUID()).openInventory(this.inv);
     }
 
 }

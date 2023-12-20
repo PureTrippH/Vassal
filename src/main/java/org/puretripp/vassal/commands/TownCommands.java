@@ -116,7 +116,7 @@ public class TownCommands {
 
         public void onCommand(Player p, String[] args) {
             VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
-            p.openInventory((new TownshipMenu(vp.getSelected(), vp)).getInv());
+            vp.pushMenu(new TownshipMenu(vp.getSelected(), vp));
         }
         public String getName() { return name; }
         public String getDesc() {

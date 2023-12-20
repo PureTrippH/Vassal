@@ -16,6 +16,7 @@ import java.util.*;
 /**
  * Wrapper for a Player
  * This so Violates SRP but IDC
+ * Also, Constructor being made in a bit. Dw!
  */
 public class VassalsPlayer implements Invitable {
     private HashMap<Township, PermClass> memberInfo = new HashMap<Township, PermClass>();
@@ -27,7 +28,7 @@ public class VassalsPlayer implements Invitable {
     private Nation n;
     private UUID uuid;
     //Holds The Current Menu Stack
-    private Deque<GUIMenu> menuStack = new LinkedList<GUIMenu>();
+    private Stack<GUIMenu> menuStack = new Stack<GUIMenu>();
     private ArrayList<InviteDeliverer> invites;
 
     public VassalsPlayer(UUID uuid) {
@@ -80,7 +81,7 @@ public class VassalsPlayer implements Invitable {
         menu.open(this);
     }
     public void popMenu() {
-        if (menuStack.size() == 1) {
+        if (menuStack.size() <= 1) {
             menuStack.clear();
             return;
         }

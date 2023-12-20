@@ -31,6 +31,7 @@ public class Township implements Permissable, InviteDeliverer {
     private ArrayList<Residence> residences;
     private HashMap<UUID, PermClass> players;
     private ArrayList<Player> insideClaim;
+    private ArrayList<Invitable> invites;
     private int level;
 
     private Nation nation;
@@ -260,6 +261,7 @@ public class Township implements Permissable, InviteDeliverer {
         VassalsPlayer vp = (VassalsPlayer) inv;
         players.put(vp.getUUID(), permClasses.get(0));
         vp.addTown(this, permClasses.get(0));
+        invites.remove(inv);
     }
 
     @Override
@@ -268,8 +270,6 @@ public class Township implements Permissable, InviteDeliverer {
         if (!(inv instanceof VassalsPlayer)) throw new IllegalArgumentException("Invited Must Be a Player!");
         VassalsPlayer vp = (VassalsPlayer) inv;
         invites.remove(inv);
-
-
     }
 
     @Override
@@ -278,5 +278,6 @@ public class Township implements Permissable, InviteDeliverer {
         if (!(inv instanceof VassalsPlayer)) throw new IllegalArgumentException("Invited Must Be a Player!");
         VassalsPlayer vp = (VassalsPlayer) inv;
         vp.addInvite(this);
+        invites.add(inv);
     }
 }

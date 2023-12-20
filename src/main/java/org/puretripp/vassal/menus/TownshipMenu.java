@@ -49,16 +49,16 @@ public class TownshipMenu extends Menu implements Listener {
                 String val = data.get(clickFunc, PersistentDataType.STRING);
                 switch (val) {
                     case ("Permissions"):
-                            e.getWhoClicked().openInventory(new PermsMenu(
-                        false, vp.getNation(), vp.getSelected(), vp).getInv());
+                            vp.pushMenu(new PermsMenu(
+                        false, vp.getNation(), vp.getSelected(), vp));
                         break;
                     case ("Government"):
                         break;
                     case ("Treasury"):
                         break;
                     case ("Residences"):
-                        e.getWhoClicked().openInventory(new ResidenceList(
-                        town, vp).getInv());
+                        vp.pushMenu(new ResidenceList(
+                        town, vp));
                         break;
                 }
             }
