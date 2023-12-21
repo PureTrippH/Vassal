@@ -90,6 +90,7 @@ public class TownshipMenu extends Menu implements Listener {
                 ItemMeta meta = e.getCurrentItem().getItemMeta();
                 PersistentDataContainer data = meta.getPersistentDataContainer();
                 String inviteData = data.get(clickFunc, PersistentDataType.STRING);
+                if (inviteData == null) return;
                 if((inviteData.substring(0, 10)).equals("residence_")) {
                     int index = Integer.parseInt(inviteData.substring(10));
                     Bukkit.getPlayer(vp.getUUID())
