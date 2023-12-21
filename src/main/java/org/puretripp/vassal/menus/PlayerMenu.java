@@ -12,6 +12,7 @@ import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
+import org.puretripp.vassal.utils.interfaces.Invitable;
 import org.puretripp.vassal.utils.interfaces.InviteDeliverer;
 
 import java.util.List;
@@ -58,9 +59,9 @@ public class PlayerMenu extends Menu {
             this.populateItems();
         }
         public void populateItems() {
-            List<InviteDeliverer> invites = you.getAllInvites();
-            for (int i = 0; i < you.getAllInvites().size(); i++) {
-                super.contents.add(Menu.generateItem(Material.PAPER, (ChatColor.GREEN + invites.get(i).toString()),  "Invite_" + i));
+            InviteDeliverer[] invites = you.getAllInvites();
+            for (int i = 0; i < invites.length; i++) {
+                super.contents.add(Menu.generateItem(Material.PAPER, (ChatColor.GREEN + invites[i].toString()),  "Invite_" + i));
             }
             refreshContents();
         }

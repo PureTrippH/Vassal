@@ -8,6 +8,6 @@ public interface Invitable {
     public void acceptInvite(InviteDeliverer inviter);
     public void rejectInvite(InviteDeliverer inviter);
     public InviteDeliverer getInvite(int index);
-    public List<InviteDeliverer> getAllInvites();
+    public Object[] getAllInvites();
 
 }

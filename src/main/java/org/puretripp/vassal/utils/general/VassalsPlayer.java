@@ -131,7 +131,7 @@ public class VassalsPlayer implements Invitable {
         return this.invites.get(index);
     }
     @Override
-    public List<InviteDeliverer> getAllInvites() {
-        return invites;
+    public InviteDeliverer[] getAllInvites() {
+        return (InviteDeliverer[]) invites.toArray();
     }
 }
