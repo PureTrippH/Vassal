@@ -30,15 +30,6 @@ public class NationMenu extends Menu {
             }
         }
         super.contents.add(banner);
-        super.contents.add(new ItemStack(Material.ACACIA_BOAT));
-        super.contents.add(new ItemStack(Material.ACACIA_BOAT));
-        super.contents.add(new ItemStack(Material.ACACIA_BOAT));
-        super.contents.add(new ItemStack(Material.ACACIA_BOAT));
-        super.contents.add(new ItemStack(Material.ACACIA_BOAT));
-        super.contents.add(new ItemStack(Material.ACACIA_BOAT));
-        super.contents.add(new ItemStack(Material.ACACIA_BOAT));
-        super.contents.add(new ItemStack(Material.ACACIA_BOAT));
-        super.contents.add(new ItemStack(Material.ACACIA_BOAT));
         refreshContents();
     }
 

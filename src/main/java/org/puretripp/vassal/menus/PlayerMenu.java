@@ -10,7 +10,12 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.types.townships.Township;
+import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
+import org.puretripp.vassal.utils.interfaces.Invitable;
+import org.puretripp.vassal.utils.interfaces.InviteDeliverer;
+
+import java.util.List;
 
 public class PlayerMenu extends Menu {
     VassalsPlayer you;
@@ -54,37 +59,34 @@ public class PlayerMenu extends Menu {
             this.populateItems();
         }
         public void populateItems() {
-            Township[] invites = you.getInvites();
-            for (int i = 0; i < you.getInvites().length; i++) {
-                super.contents.add(Menu.generateItem(Material.PAPER, (ChatColor.GREEN + invites[i].getName()),  "Invite_" + i));
+            InviteDeliverer[] invites = you.getAllInvites();
+            for (int i = 0; i < invites.length; i++) {
+                super.contents.add(Menu.generateItem(Material.PAPER, (ChatColor.GREEN + invites[i].toString()),  "Invite_" + i));
             }
             refreshContents();
         }
         @EventHandler
         public void onInventoryClick(final InventoryClickEvent e) {
-            if (e.getInventory().equals(inv)) {
-                if ((e.getCurrentItem()) == null) return;
-                ItemMeta meta = e.getCurrentItem().getItemMeta();
-                PersistentDataContainer data = meta.getPersistentDataContainer();
-                NamespacedKey key = new NamespacedKey(Main.getPlugin(Main.class), "iconClickFunction");
-                String inviteData = data.get(key, PersistentDataType.STRING);
-                if((inviteData.substring(0, 7)).equals("Invite_")) {
-                    int index = Integer.parseInt(inviteData.substring(7));
-                    if (e.isLeftClick()) {
-                        e.getWhoClicked().closeInventory();
-                        Player p = ((Player) e.getWhoClicked());
-                        p.sendTitle(ChatColor.GREEN + "Welcome!", ChatColor.GREEN + "To the Town of " + you.getInvites()[index].getName(), 5, 30, 5);
-                        p.playSound(p, Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1f, 2f);
-                        you.getInvites()[index].addPlayer(you, you.getInvites()[index].getRank(1));
-                        you.removeInvite(you.getInvites()[index]);
-                    } else if (e.isRightClick()) {
-                        e.getWhoClicked().closeInventory();
-                        Player p = ((Player) e.getWhoClicked());
-                        p.sendTitle(ChatColor.RED + "Rejected Invite!", ChatColor.RED + "To the Town of " + you.getInvites()[index].getName(), 5, 30, 5);
-                        p.playSound(p, Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1f, 2f);
-                        you.getInvites()[index].addPlayer(you, you.getInvites()[index].getRank(1));
-                        you.removeInvite(you.getInvites()[index]);
-                    }
+            if (!e.getInventory().equals(inv)) return;
+            if ((e.getCurrentItem()) == null) return;
+            ItemMeta meta = e.getCurrentItem().getItemMeta();
+            PersistentDataContainer data = meta.getPersistentDataContainer();
+            NamespacedKey key = new NamespacedKey(Main.getPlugin(Main.class), "iconClickFunction");
+            String inviteData = data.get(key, PersistentDataType.STRING);
+            if((inviteData.substring(0, 7)).equals("Invite_")) {
+                int index = Integer.parseInt(inviteData.substring(7));
+                if (e.isLeftClick()) {
+                    e.getWhoClicked().closeInventory();
+                    Player p = ((Player) e.getWhoClicked());
+                    you.acceptInvite(you.getInvite(index));
+                    p.sendTitle(ChatColor.GREEN + "Invite Accepted!","", 5, 30, 5);
+                    p.playSound(p, Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1f, 2f);
+                } else if (e.isRightClick()) {
+                    e.getWhoClicked().closeInventory();
+                    Player p = ((Player) e.getWhoClicked());
+                    p.sendTitle(ChatColor.RED + "Rejected Invite!", "", 5, 30, 5);
+                    p.playSound(p, Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1f, 2f);
+                    you.rejectInvite(you.getInvite(index));
                 }
             }
         }
