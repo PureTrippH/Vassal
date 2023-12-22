@@ -2,6 +2,7 @@ package org.puretripp.vassal.utils.general;
 
 import net.bytebuddy.dynamic.scaffold.MethodGraph;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.townships.Township;
@@ -101,6 +102,10 @@ public class VassalsPlayer implements Invitable {
 
     public Residence getSelectedResidence() {
         return selectedResidence;
+    }
+
+    public Player getPlayer() {
+        return Bukkit.getPlayer(uuid);
     }
 
     public void setSelectedResidence(Residence selectedResidence) {

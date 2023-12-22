@@ -11,6 +11,7 @@ import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.menus.Menu;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.townships.Township;
+import org.puretripp.vassal.utils.MenuIcon;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 import org.puretripp.vassal.utils.interfaces.GUIMenu;
@@ -31,15 +32,15 @@ public class PermsMenu extends Menu implements GUIMenu {
     }
 
     public void populateItems() {
-        ItemStack add = Menu.generateCustomSkull(ChatColor.GREEN + "Create Rank", "createMenu",
+        ItemStack add = MenuIcon.generateCustomSkull(ChatColor.GREEN + "Create Rank", "createMenu",
                 null, "790f62ec5fa2e93e67cf1e00db8af4b47ac7ac769aa09a203a1f575a12710b10");
-        ItemStack list = Menu.generateCustomSkull(ChatColor.GREEN + "Create Rank", "createMenu",
+        ItemStack list = MenuIcon.generateCustomSkull(ChatColor.GREEN + "Create Rank", "createMenu",
                 null, "8a16038bc8e6518afa91498dab7675c01cb31a125d21c49b861294d39e1c560c");
-        ItemStack promote = Menu.generateCustomSkull(ChatColor.GREEN + "Promote Players", "createMenu",
+        ItemStack promote = MenuIcon.generateCustomSkull(ChatColor.GREEN + "Promote Players", "createMenu",
                 null, "1c8e0cfebc7f9c7e16fbaaae025d1b1d19d5ee633666bcf25fa0b40d5bd21bcd");
-        super.contents.add(add);
-        super.contents.add(list);
-        super.contents.add(promote);
+        super.contents.add(new MenuIcon(add));
+        super.contents.add(new MenuIcon(list));
+        super.contents.add(new MenuIcon(promote));
         super.refreshContents();
     }
 
@@ -65,8 +66,8 @@ public class PermsMenu extends Menu implements GUIMenu {
         public void populateItems() {
             for(UUID uuid : town.getPlayers()) {
                 OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
-                super.contents.add(Menu.generateSkull(ChatColor.RED + p.getName(), ("Perms_" + p.getUniqueId()),
-                        null, uuid));
+                super.contents.add(new MenuIcon(MenuIcon.generateSkull(ChatColor.RED + p.getName(), ("Perms_" + p.getUniqueId()),
+                        null, uuid)));
             }
             super.refreshContents();
         }

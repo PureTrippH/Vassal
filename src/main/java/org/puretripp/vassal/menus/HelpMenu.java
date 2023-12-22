@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.puretripp.vassal.utils.MenuIcon;
 import org.puretripp.vassal.utils.SubCommand;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
@@ -23,11 +24,11 @@ public class HelpMenu extends Menu{
         for (SubCommand value : commands.values()) {
             if (value.getDesc() != null) {
                 List<String> desc = Arrays.asList(value.getDesc().split("\n"));
-                ItemStack it = Menu.generateItem(Material.LIME_CANDLE, ChatColor.GREEN + value.getName(), "HelpIcon", desc);
-                super.contents.add(it);
+                super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.LIME_CANDLE,
+                    ChatColor.GREEN + value.getName(), "HelpIcon", desc)));
             } else {
-                ItemStack it = Menu.generateItem(Material.LIME_CANDLE, ChatColor.GREEN + value.getName(), "HelpIcon");
-                super.contents.add(it);
+                super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.LIME_CANDLE,
+                    ChatColor.GREEN + value.getName(), "HelpIcon")));
             }
         }
         refreshContents();
