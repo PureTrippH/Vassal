@@ -14,6 +14,7 @@ import org.puretripp.vassal.menus.submenus.PermsMenu;
 import org.puretripp.vassal.menus.submenus.SubclaimMenu;
 import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.types.Residence;
+import org.puretripp.vassal.utils.MenuIcon;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 public class TownshipMenu extends Menu implements Listener {
@@ -31,38 +32,21 @@ public class TownshipMenu extends Menu implements Listener {
 
     public void populateItems() {
         if(town.getPlayerRank(vp.getUUID()).isCanManagePolitics()) {
-            super.contents.add(Menu.generateItem(Material.IRON_BARS, (ChatColor.GREEN + "Permissions"),  "Permissions"));
-            super.contents.add(Menu.generateItem(Material.RED_BED, (ChatColor.GREEN + "Residences"),  "Residences"));
-            super.contents.add(Menu.generateItem(Material.QUARTZ_PILLAR, (ChatColor.GREEN + "Government"),  "Government"));
-            super.contents.add(Menu.generateItem(Material.GOLD_NUGGET, (ChatColor.GREEN + "Treasury"),  "Treasury"));
+            super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.IRON_BARS,
+                    (ChatColor.GREEN + "Permissions"),  "Permissions"), () -> {
+                vp.pushMenu(new PermsMenu(
+                false, vp.getNation(), vp.getSelected(), vp));
+            }));
+            super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.RED_BED,
+                    (ChatColor.GREEN + "Residences"),  "Residences"), () -> {
+                vp.pushMenu(new ResidenceList(town, vp));
+            }));
+            super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.QUARTZ_PILLAR,
+                    (ChatColor.GREEN + "Government"),  "Government")));
+            super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.GOLD_NUGGET,
+                    (ChatColor.GREEN + "Treasury"),  "Treasury")));
         }
         super.refreshContents();
-    }
-
-    @EventHandler
-    public void onInventoryClick(final InventoryClickEvent e) {
-        if (e.getInventory().equals(inv) && e.getCurrentItem() != null) {
-            ItemStack selected = e.getCurrentItem();
-            ItemMeta meta = selected.getItemMeta();
-            PersistentDataContainer data = meta.getPersistentDataContainer();
-            if (data.has(clickFunc, PersistentDataType.STRING)) {
-                String val = data.get(clickFunc, PersistentDataType.STRING);
-                switch (val) {
-                    case ("Permissions"):
-                            vp.pushMenu(new PermsMenu(
-                        false, vp.getNation(), vp.getSelected(), vp));
-                        break;
-                    case ("Government"):
-                        break;
-                    case ("Treasury"):
-                        break;
-                    case ("Residences"):
-                        vp.pushMenu(new ResidenceList(
-                        town, vp));
-                        break;
-                }
-            }
-        }
     }
 
     private class ResidenceList extends Menu {
@@ -77,26 +61,14 @@ public class TownshipMenu extends Menu implements Listener {
         public void populateItems() {
             for (int i = 0; i < town.getAllResidences().size(); i++) {
                 Residence res = town.getAllResidences().get(i);
-                super.contents.add(Menu.generateItem(Material.GREEN_BED, (ChatColor.GREEN + res.getName()),
-                    "residence_" + i));
+                int finalI = i;
+                super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.GREEN_BED, (ChatColor.GREEN + res.getName()),
+                    "residence_" + i), () -> {
+                    int index = finalI;
+                    Bukkit.getPlayer(vp.getUUID()).openInventory(new SubclaimMenu(town.getAllResidences().get(index), town, vp).getInv());
+                }));
             }
             super.refreshContents();
-        }
-
-        @EventHandler
-        public void onInventoryClick(final InventoryClickEvent e) {
-            if (e.getInventory().equals(inv)) {
-                if ((e.getCurrentItem()) == null) return;
-                ItemMeta meta = e.getCurrentItem().getItemMeta();
-                PersistentDataContainer data = meta.getPersistentDataContainer();
-                String inviteData = data.get(clickFunc, PersistentDataType.STRING);
-                if (inviteData == null) return;
-                if((inviteData.substring(0, 10)).equals("residence_")) {
-                    int index = Integer.parseInt(inviteData.substring(10));
-                    Bukkit.getPlayer(vp.getUUID())
-                        .openInventory(new SubclaimMenu(town.getAllResidences().get(index), town, vp).getInv());
-                }
-            }
         }
     }
 }

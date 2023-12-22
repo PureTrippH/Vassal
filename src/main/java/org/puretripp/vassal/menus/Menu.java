@@ -19,10 +19,12 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.profile.PlayerProfile;
 import org.puretripp.vassal.main.Main;
+import org.puretripp.vassal.utils.MenuIcon;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 import org.puretripp.vassal.utils.interfaces.GUIMenu;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -37,8 +39,7 @@ import java.util.UUID;
 public abstract class Menu implements Listener, GUIMenu {
     protected final Inventory inv;
     private Plugin pl = Main.getPlugin(Main.class);
-    protected ArrayList<ItemStack> contents = new ArrayList<ItemStack>();
-    protected ArrayList<Menu> subMenus = new ArrayList<Menu>();
+    protected ArrayList<MenuIcon> contents = new ArrayList<MenuIcon>();
     private int page = 1;
 
     /**
@@ -93,109 +94,43 @@ public abstract class Menu implements Listener, GUIMenu {
         }
     }
 
-    protected static ItemStack generateItem(Material m, String name, String value, List<String> lore) {
-        ItemStack newIcon = new ItemStack(m);
-        ItemMeta meta = newIcon.getItemMeta();
-        meta.setDisplayName(name);
-        meta.setLore(lore);
-        NamespacedKey clickFunc = new NamespacedKey(Main.getPlugin(Main.class), "iconClickFunction");
-        PersistentDataContainer data = meta.getPersistentDataContainer();
-        data.set(clickFunc, PersistentDataType.STRING, value);
-        if (lore != null) {
-            meta.setLore(lore);
-        }
-        newIcon.setItemMeta(meta);
-        return newIcon;
-    }
-
-    protected static ItemStack generateSkull(String name, String value, List<String> lore,
-                                             UUID playerName) {
-        OfflinePlayer p = Bukkit.getOfflinePlayer(playerName);
-        ItemStack newIcon = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta meta = (SkullMeta) newIcon.getItemMeta();
-        meta.setDisplayName(name);
-        meta.setLore(lore);
-        meta.setOwner(p.getName());
-        NamespacedKey clickFunc = new NamespacedKey(Main.getPlugin(Main.class), "iconClickFunction");
-        PersistentDataContainer data = meta.getPersistentDataContainer();
-        data.set(clickFunc, PersistentDataType.STRING, value);
-        if (lore != null) {
-            meta.setLore(lore);
-        }
-        newIcon.setItemMeta(meta);
-        return newIcon;
-    }
-    protected static ItemStack generateCustomSkull(String name, String value, List<String> lore,
-                                             String texture) {
-        ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
-        SkullMeta itemMeta = (SkullMeta) item.getItemMeta();
-        String url = ("http://textures.minecraft.net/texture/" + texture);
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
-        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
-        Field profileField = null;
-        try
-        {
-            profileField = itemMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(itemMeta, profile);
-        }
-        catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e)
-        {
-            Bukkit.getLogger().info(ChatColor.RED + e.getMessage());
-        }
-        item.setItemMeta(itemMeta);
-        NamespacedKey clickFunc = new NamespacedKey(Main.getPlugin(Main.class), "iconClickFunction");
-        PersistentDataContainer data = itemMeta.getPersistentDataContainer();
-        data.set(clickFunc, PersistentDataType.STRING, value);
-        itemMeta.setDisplayName(name);
-        if (lore != null) {
-            itemMeta.setLore(lore);
-        }
-        item.setItemMeta(itemMeta);
-        System.out.println(item);
-        return item;
-    }
-
-
-    protected static ItemStack generateItem(Material m, String name, String value) {
-        return generateItem(m, name, value, new ArrayList<String>());
-    }
-
     protected void refreshContents() {
         for (int i = 0 + (7*(page-1)); i < 7 + (7*(page-1)); i++) {
             if (i < contents.size()) {
-                inv.setItem(10 + (i - (7*(page-1))), contents.get(i));
+                inv.setItem(10 + (i - (7*(page-1))), contents.get(i).getIcon());
             }
         }
-
     }
 
     @EventHandler
     public void onInvClick(final InventoryClickEvent e) {
-        if (e.getInventory().equals(inv)) {
-            final ItemStack clickedItem = e.getCurrentItem();
+        if (!e.getInventory().equals(inv)) return;
+        final ItemStack clickedItem = e.getCurrentItem();
+        if (clickedItem == null || clickedItem.getType().isAir()) return;
 
-            // verify current item is not null
-            if (clickedItem == null || clickedItem.getType().isAir()) return;
-
-            final Player p = (Player) e.getWhoClicked();
-            if (e.getRawSlot() == 9 && page > 1) {
-                --page;
-                inv.clear();
-                initializeItems(page);
-            }
-            if(e.getRawSlot() == 17 && page <= Math.ceil(contents.size()/7)) {
-                ++page;
-                inv.clear();
-                initializeItems(page);
-            }
-            if(e.getRawSlot() == 22) {
-                VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
-                vp.popMenu();
-            }
-            e.setCancelled(true);
+        final Player p = (Player) e.getWhoClicked();
+        if (e.getRawSlot() == 9 && page > 1) {
+            --page;
+            inv.clear();
+            initializeItems(page);
         }
+        if(e.getRawSlot() == 17 && page <= Math.ceil(contents.size()/7)) {
+            ++page;
+            inv.clear();
+            initializeItems(page);
+        }
+        if(e.getRawSlot() == 22) {
+            VassalsPlayer vp = VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
+            vp.popMenu();
+        }
+        if (e.getRawSlot() > 9 && e.getRawSlot() < 17) {
+            if (e.isRightClick()) {
+                contents.get(e.getRawSlot() - 10).onRightClick();
+            } else {
+                contents.get(e.getRawSlot() - 10).onClick();
+            }
+        }
+        e.setCancelled(true);
     }
 
     @EventHandler

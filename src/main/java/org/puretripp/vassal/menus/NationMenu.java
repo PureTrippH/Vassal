@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.plugin.Plugin;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.types.Nation;
+import org.puretripp.vassal.utils.MenuIcon;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 public class NationMenu extends Menu {
@@ -29,7 +30,9 @@ public class NationMenu extends Menu {
                 banner.setItemMeta(n.getBanner());
             }
         }
-        super.contents.add(banner);
+        super.contents.add(new MenuIcon(banner, () -> {
+            return;
+        }));
         refreshContents();
     }
 
