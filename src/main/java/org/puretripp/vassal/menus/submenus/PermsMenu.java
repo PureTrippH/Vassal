@@ -7,14 +7,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.lustrouslib.menu.Menu;
+import org.lustrouslib.menu.MenuIcon;
+import org.lustrouslib.menu.interfaces.GUIMenu;
 import org.puretripp.vassal.main.Main;
-import org.puretripp.vassal.menus.Menu;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.MenuIcon;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
-import org.puretripp.vassal.utils.interfaces.GUIMenu;
 
 import java.util.UUID;
 
@@ -24,7 +24,7 @@ public class PermsMenu extends Menu implements GUIMenu {
     private VassalsPlayer target;
 
     public PermsMenu(boolean isNation, Nation nation, Township town, VassalsPlayer target) {
-        super("Permissions Menu");
+        super("Permissions Menu", target);
         this.nation = nation;
         this.town = town;
         this.target = target;
@@ -44,7 +44,6 @@ public class PermsMenu extends Menu implements GUIMenu {
         super.refreshContents();
     }
 
-    @Override
     public void open(VassalsPlayer p) {
         Bukkit.getPlayer(p.getUUID()).openInventory(this.inv);
     }
@@ -56,8 +55,8 @@ public class PermsMenu extends Menu implements GUIMenu {
         private VassalsPlayer target;
         private NamespacedKey key = new NamespacedKey(Main.getPlugin(Main.class), "iconClickFunction");
 
-        public PlayerList(boolean isNation, Nation n, Township t) {
-            super("Permission Menu");
+        public PlayerList(boolean isNation, VassalsPlayer user, Nation n, Township t) {
+            super("Permission Menu", user);
             this.nation = n;
             this.town = t;
             populateItems();

@@ -1,6 +1,5 @@
 package org.puretripp.vassal.main;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -9,12 +8,11 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mongodb.client.MongoClient;
-import org.puretripp.vassal.commands.CommandManager;
+import org.lustrouslib.command.CommandManager;
+import org.lustrouslib.wrapper.StateHandler;
+import org.puretripp.vassal.commands.TownCommands;
 import org.puretripp.vassal.events.Events;
 import org.puretripp.vassal.utils.general.VassalWorld;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public final class Main extends JavaPlugin {
     //Btw this password is Old
@@ -26,9 +24,16 @@ public final class Main extends JavaPlugin {
     private Economy econ;
     @Override
     public void onEnable() {
-        // Plugin startup logic
-        this.getCommand("vassal").setExecutor(new CommandManager());
         currentInstance = VassalWorld.getWorldInstance();
+        CommandManager towncmd = new CommandManager("vassal", new StateHandler(this, currentInstance));
+        towncmd.registerCommand("pm", new TownCommands.SelfCommand());
+        towncmd.registerCommand("invite", new TownCommands.inviteCommand());
+        towncmd.registerCommand("create", new TownCommands.createCommand());
+        towncmd.registerCommand("border", new TownCommands.borderCommand());
+        towncmd.registerCommand("claim", new TownCommands.claimCommand());
+        towncmd.registerCommand("subclaim", new TownCommands.subclaimCommand());
+        towncmd.registerCommand("menu", new TownCommands.menu());
+
         //Register Events
         getServer().getPluginManager().registerEvents(new Events(), this);
 
