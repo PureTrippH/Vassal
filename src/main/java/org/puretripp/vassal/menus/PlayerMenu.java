@@ -2,26 +2,15 @@ package org.puretripp.vassal.menus;
 
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
-import org.puretripp.vassal.main.Main;
-import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.MenuIcon;
-import org.puretripp.vassal.utils.general.VassalWorld;
+import org.lustrouslib.menu.Menu;
+import org.lustrouslib.menu.MenuIcon;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
-import org.puretripp.vassal.utils.interfaces.Invitable;
 import org.puretripp.vassal.utils.interfaces.InviteDeliverer;
-
-import java.util.List;
 
 public class PlayerMenu extends Menu {
     VassalsPlayer you;
     public PlayerMenu(VassalsPlayer vp) {
-        super("You:");
+        super("You:", vp);
         this.you = vp;
         populateItems();
     }
@@ -40,7 +29,7 @@ public class PlayerMenu extends Menu {
     private class InvitesMenu extends Menu {
         VassalsPlayer you;
         public InvitesMenu(VassalsPlayer vp) {
-            super("Your Invites:");
+            super("Your Invites:", vp);
             this.you = vp;
             this.populateItems();
         }

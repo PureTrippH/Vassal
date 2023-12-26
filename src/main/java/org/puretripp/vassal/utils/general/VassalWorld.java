@@ -2,6 +2,7 @@ package org.puretripp.vassal.utils.general;
 
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
+import org.lustrouslib.menu.interfaces.WrapperStorage;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.utils.claiming.LandChunk;
 
@@ -15,7 +16,7 @@ import java.util.UUID;
  * @author PureTrippH
  * @Version 1.1
  */
-public class VassalWorld {
+public class VassalWorld implements WrapperStorage<Player, VassalsPlayer> {
     public String worldName;
 
     private static volatile VassalWorld currInstance;
@@ -45,8 +46,18 @@ public class VassalWorld {
         return allLand.get(c);
     }
 
-    public VassalsPlayer getPlayer(Player p) {
-        return VassalWorld.getWorldInstance().onlinePlayers.get(p.getUniqueId());
+    @Override
+    public VassalsPlayer getWrapper(Player p) {
+        return this.onlinePlayers.get(p.getUniqueId());
     }
 
+    @Override
+    public void wrap(Player player) {
+        this.onlinePlayers.put(player.getUniqueId(), new VassalsPlayer(player.getUniqueId()));
+    }
+
+    @Override
+    public void removeWrapper(Player player) {
+        this.onlinePlayers.remove(player.getUniqueId());
+    }
 }

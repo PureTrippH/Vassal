@@ -32,10 +32,10 @@ public class NationsMaster implements CommandExecutor {
         try {
             switch (args[0].toLowerCase()) {
                 case "invites":
-                    p.openInventory((new NationMenu(vp.getNation())).getInv());
+                    vp.pushMenu(new NationMenu(vp.getNation(), vp));
                     return true;
                 case "view":
-                    p.openInventory((new NationMenu(vp.getNation())).getInv());
+                    vp.pushMenu(new NationMenu(vp.getNation(), vp));
                     return true;
                 case "create":
                     if (args.length <= 1) {
@@ -52,7 +52,7 @@ public class NationsMaster implements CommandExecutor {
                         throw new IllegalArgumentException("You can not create a Nation when you are in a nation!");
                     }
                     ArrayList<VassalsPlayer> leaders = new ArrayList<VassalsPlayer>();
-                    leaders.add(VassalWorld.getWorldInstance().getPlayer(p));
+                    leaders.add(VassalWorld.getWorldInstance().getWrapper(p));
 
                     ArrayList<Township> towns = new ArrayList<Township>();
                     towns.add(vp.getSelected());

@@ -28,7 +28,7 @@ public class Events implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        instance.onlinePlayers.put(e.getPlayer().getUniqueId(), new VassalsPlayer(e.getPlayer().getUniqueId()));
+        VassalWorld.getWorldInstance().wrap(e.getPlayer());
     }
 
     /**
@@ -39,7 +39,7 @@ public class Events implements Listener {
     public void onBreak(final BlockBreakEvent e) {
         LandChunk lc = VassalWorld.getWorldInstance().getLandChunkByChunk(e.getBlock().getLocation().getChunk());
         if(lc != null) {
-            VassalsPlayer vp = VassalWorld.getWorldInstance().getPlayer(e.getPlayer());
+            VassalsPlayer vp = VassalWorld.getWorldInstance().getWrapper(e.getPlayer());
             e.setCancelled(!vp.isInTown(lc.getTown()));
             for (Residence r : lc.getTown().getAllResidences()) {
                 if(r.contains(e.getBlock().getLocation())) {
@@ -55,7 +55,7 @@ public class Events implements Listener {
     public void onPlace(final BlockPlaceEvent e) {
         LandChunk lc = VassalWorld.getWorldInstance().getLandChunkByChunk(e.getBlock().getLocation().getChunk());
         if (lc != null) {
-            VassalsPlayer vp = VassalWorld.getWorldInstance().getPlayer(e.getPlayer());
+            VassalsPlayer vp = VassalWorld.getWorldInstance().getWrapper(e.getPlayer());
             e.setCancelled(!vp.isInTown(lc.getTown()));
             for (Residence r : lc.getTown().getAllResidences()) {
                 if(r.contains(e.getBlock().getLocation())) {
@@ -105,7 +105,7 @@ public class Events implements Listener {
         if(e.getClickedBlock() == null) return;
         LandChunk c = VassalWorld.getWorldInstance().getLandChunkByChunk(e.getClickedBlock().getChunk());
         if (c == null) return;
-        VassalsPlayer vp = VassalWorld.getWorldInstance().getPlayer(e.getPlayer());
+        VassalsPlayer vp = VassalWorld.getWorldInstance().getWrapper(e.getPlayer());
         if (vp.getIsSelectionMode() && vp.cooldowns.getOrDefault("clickAgainCooldown", true)) {
             Residence res = vp.getSelectedResidence();
             if (e.getAction() == Action.LEFT_CLICK_BLOCK) {

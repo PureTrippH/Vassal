@@ -1,20 +1,15 @@
 package org.puretripp.vassal.menus;
 
 import org.bukkit.*;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.lustrouslib.menu.Menu;
+import org.lustrouslib.menu.MenuIcon;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.menus.submenus.PermsMenu;
 import org.puretripp.vassal.menus.submenus.SubclaimMenu;
 import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.types.Residence;
-import org.puretripp.vassal.utils.MenuIcon;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 public class TownshipMenu extends Menu implements Listener {
@@ -24,7 +19,7 @@ public class TownshipMenu extends Menu implements Listener {
     private NamespacedKey clickFunc = new NamespacedKey(Main.getPlugin(Main.class), "iconClickFunction");
 
     public TownshipMenu(Township town, VassalsPlayer vp) {
-        super("Town Menu");
+        super("Town Menu", vp);
         this.town = town;
         this.vp = vp;
         populateItems();
@@ -53,7 +48,7 @@ public class TownshipMenu extends Menu implements Listener {
         Township town;
         VassalsPlayer vp;
         public ResidenceList(Township town, VassalsPlayer vp) {
-            super("Residence List");
+            super("Residence List", vp);
             this.town = town;
             this.vp = vp;
             populateItems();
@@ -65,7 +60,7 @@ public class TownshipMenu extends Menu implements Listener {
                 super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.GREEN_BED, (ChatColor.GREEN + res.getName()),
                     "residence_" + i), () -> {
                     int index = finalI;
-                    Bukkit.getPlayer(vp.getUUID()).openInventory(new SubclaimMenu(town.getAllResidences().get(index), town, vp).getInv());
+                    vp.pushMenu(new SubclaimMenu(town.getAllResidences().get(index), town, vp));
                 }));
             }
             super.refreshContents();

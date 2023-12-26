@@ -1,14 +1,15 @@
 package org.puretripp.vassal.utils.general;
 
-import net.bytebuddy.dynamic.scaffold.MethodGraph;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.lustrouslib.menu.interfaces.GUIMenu;
+import org.lustrouslib.menu.interfaces.MenuClient;
+import org.lustrouslib.wrapper.PlayerWrapper;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;
-import org.puretripp.vassal.utils.interfaces.GUIMenu;
 import org.puretripp.vassal.utils.interfaces.Invitable;
 import org.puretripp.vassal.utils.interfaces.InviteDeliverer;
 
@@ -19,7 +20,7 @@ import java.util.*;
  * This so Violates SRP but IDC
  * Also, Constructor being made in a bit. Dw!
  */
-public class VassalsPlayer implements Invitable {
+public class VassalsPlayer extends PlayerWrapper implements Invitable, MenuClient {
     private HashMap<Township, PermClass> memberInfo = new HashMap<Township, PermClass>();
     private ArrayList<Residence> ownedSubClaims = new ArrayList<Residence>();
     private ArrayList<BukkitRunnable> clientTasks = new ArrayList<>();
@@ -33,6 +34,7 @@ public class VassalsPlayer implements Invitable {
     private ArrayList<InviteDeliverer> invites;
 
     public VassalsPlayer(UUID uuid) {
+        super(Bukkit.getPlayer(uuid));
         this.uuid = uuid;
     }
     public UUID getUUID() { return uuid; }
@@ -76,18 +78,6 @@ public class VassalsPlayer implements Invitable {
         for (BukkitRunnable task : clientTasks) {
             task.cancel();
         }
-    }
-    public void pushMenu(GUIMenu menu) {
-        menuStack.push(menu);
-        menu.open(this);
-    }
-    public void popMenu() {
-        if (menuStack.size() <= 1) {
-            menuStack.clear();
-            return;
-        }
-        menuStack.pop();
-        menuStack.peek().open(this);
     }
     @Override
     public boolean equals(Object o) {

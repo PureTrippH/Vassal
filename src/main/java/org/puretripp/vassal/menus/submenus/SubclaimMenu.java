@@ -3,21 +3,13 @@ package org.puretripp.vassal.menus.submenus;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
+import org.lustrouslib.menu.Menu;
+import org.lustrouslib.menu.MenuIcon;
 import org.puretripp.vassal.events.OnVertexSelectionOpen;
-import org.puretripp.vassal.main.Main;
-import org.puretripp.vassal.menus.Menu;
 import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.types.Residence;
-import org.puretripp.vassal.utils.MenuIcon;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 import java.util.Arrays;
@@ -29,7 +21,7 @@ public class SubclaimMenu extends Menu {
 
 
     public SubclaimMenu(Residence subclaim, Township town, VassalsPlayer vp) {
-        super("Subclaim Manager");
+        super("Subclaim Manager", vp);
         this.subclaim = subclaim;
         this.vp = vp;
         this.town = town;
