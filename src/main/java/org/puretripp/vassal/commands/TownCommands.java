@@ -2,9 +2,7 @@ package org.puretripp.vassal.commands;
 
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.lustrouslib.command.CommandManager;
 import org.lustrouslib.command.SubCommand;
-import org.lustrouslib.menu.specificmenus.HelpMenu;
 import org.lustrouslib.wrapper.PlayerWrapper;
 import org.lustrouslib.wrapper.StateHandler;
 import org.puretripp.vassal.menus.PlayerMenu;
