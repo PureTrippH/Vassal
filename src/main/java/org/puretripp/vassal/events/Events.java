@@ -12,6 +12,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.lustrouslib.wrapper.StateHandler;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.menus.submenus.SubclaimMenu;
 import org.puretripp.vassal.types.Nation;
@@ -109,7 +110,7 @@ public class Events implements Listener {
         if (vp.getIsSelectionMode() && vp.cooldowns.getOrDefault("clickAgainCooldown", true)) {
             Residence res = vp.getSelectedResidence();
             if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                e.getPlayer().openInventory(new SubclaimMenu(vp.getSelectedResidence(), vp.getSelected(), vp).getInv());
+                e.getPlayer().openInventory(new SubclaimMenu(vp.getSelectedResidence(), vp.getSelected(), vp, new StateHandler<>(Main.getPlugin(Main.class), VassalWorld.getWorldInstance())).getInv());
                 res.clearLines(vp);
                 vp.clearTasks();
                 vp.setSelectionMode(null);

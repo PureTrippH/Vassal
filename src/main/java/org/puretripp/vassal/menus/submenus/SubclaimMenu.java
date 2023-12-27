@@ -7,7 +7,9 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.lustrouslib.menu.Menu;
 import org.lustrouslib.menu.MenuIcon;
+import org.lustrouslib.wrapper.StateHandler;
 import org.puretripp.vassal.events.OnVertexSelectionOpen;
+import org.puretripp.vassal.types.Vassal;
 import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
@@ -18,11 +20,13 @@ public class SubclaimMenu extends Menu {
     private Residence subclaim;
     private VassalsPlayer vp;
     private Township town;
+    private StateHandler<VassalsPlayer> state;
 
 
-    public SubclaimMenu(Residence subclaim, Township town, VassalsPlayer vp) {
-        super("Subclaim Manager", vp);
+    public SubclaimMenu(Residence subclaim, Township town, VassalsPlayer vp, StateHandler state) {
+        super("Subclaim Manager", vp, state.getPlugin());
         this.subclaim = subclaim;
+        this.state = state;
         this.vp = vp;
         this.town = town;
         populateItems();

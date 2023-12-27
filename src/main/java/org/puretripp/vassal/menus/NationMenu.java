@@ -9,16 +9,18 @@ import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.plugin.Plugin;
 import org.lustrouslib.menu.Menu;
 import org.lustrouslib.menu.MenuIcon;
+import org.lustrouslib.wrapper.StateHandler;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 public class NationMenu extends Menu {
-    Nation n;
-    private Plugin pl = Main.getPlugin(Main.class);
+    private Nation n;
+    private StateHandler<VassalsPlayer> state;
 
-    public NationMenu(Nation n, VassalsPlayer vp) {
-        super( "Nation Panel", vp);
+    public NationMenu(Nation n, VassalsPlayer vp, StateHandler state) {
+        super( "Nation Panel", vp, state.getPlugin());
+        this.state = state;
         this.n = n;
         populateItems();
     }

@@ -25,7 +25,7 @@ public class TownCommands {
         public void onCommand(PlayerWrapper wrapper, StateHandler<? extends PlayerWrapper> state, String[] args) {
             Player p = wrapper.getPlayer();
             VassalsPlayer vp = (VassalsPlayer) state.getPlayerWrapper(p);
-            p.openInventory((new PlayerMenu(vp)).getInv());
+            p.openInventory((new PlayerMenu(vp, state)).getInv());
         }
         public String getName() { return name; }
         public String getDesc() {
@@ -109,7 +109,7 @@ public class TownCommands {
         public void onCommand(PlayerWrapper wrapper, StateHandler<? extends PlayerWrapper> state, String[] args) {
             Player p = wrapper.getPlayer();
             VassalsPlayer vp = (VassalsPlayer) state.getPlayerWrapper(p);
-            vp.pushMenu(new TownshipMenu(vp.getSelected(), vp));
+            vp.pushMenu(new TownshipMenu(vp.getSelected(), vp, state));
         }
         public String getName() { return name; }
         public String getDesc() {
@@ -176,7 +176,7 @@ public class TownCommands {
             }
             Township t = vp.getSelected();
             Residence newRes = new Residence(name, t);
-            SubclaimMenu menu = new SubclaimMenu(newRes, t, vp);
+            SubclaimMenu menu = new SubclaimMenu(newRes, t, vp, state);
             p.openInventory(menu.getInv());
         }
         public String getName() { return name; }

@@ -10,6 +10,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.lustrouslib.menu.Menu;
 import org.lustrouslib.menu.MenuIcon;
 import org.lustrouslib.menu.interfaces.GUIMenu;
+import org.lustrouslib.wrapper.StateHandler;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.types.Nation;
 import org.puretripp.vassal.types.townships.Township;
@@ -20,12 +21,14 @@ import java.util.UUID;
 
 public class PermsMenu extends Menu implements GUIMenu {
     private Township town;
+    private StateHandler<VassalsPlayer> state;
     private Nation nation;
     private VassalsPlayer target;
 
-    public PermsMenu(boolean isNation, Nation nation, Township town, VassalsPlayer target) {
-        super("Permissions Menu", target);
+    public PermsMenu(boolean isNation, Nation nation, Township town, VassalsPlayer target, StateHandler state) {
+        super("Permissions Menu", target, state.getPlugin());
         this.nation = nation;
+        this.state = state;
         this.town = town;
         this.target = target;
         populateItems();
@@ -55,8 +58,8 @@ public class PermsMenu extends Menu implements GUIMenu {
         private VassalsPlayer target;
         private NamespacedKey key = new NamespacedKey(Main.getPlugin(Main.class), "iconClickFunction");
 
-        public PlayerList(boolean isNation, VassalsPlayer user, Nation n, Township t) {
-            super("Permission Menu", user);
+        public PlayerList(boolean isNation, VassalsPlayer user, Nation n, Township t, StateHandler state) {
+            super("Permission Menu", user, state.getPlugin());
             this.nation = n;
             this.town = t;
             populateItems();

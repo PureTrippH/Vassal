@@ -25,7 +25,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         currentInstance = VassalWorld.getWorldInstance();
-        CommandManager towncmd = new CommandManager("vassal", new StateHandler(this, currentInstance));
+        CommandManager towncmd = new CommandManager("vassal", new StateHandler(getPlugin(Main.class), currentInstance));
         towncmd.registerCommand("pm", new TownCommands.SelfCommand());
         towncmd.registerCommand("invite", new TownCommands.inviteCommand());
         towncmd.registerCommand("create", new TownCommands.createCommand());
@@ -33,7 +33,6 @@ public final class Main extends JavaPlugin {
         towncmd.registerCommand("claim", new TownCommands.claimCommand());
         towncmd.registerCommand("subclaim", new TownCommands.subclaimCommand());
         towncmd.registerCommand("menu", new TownCommands.menu());
-
         //Register Events
         getServer().getPluginManager().registerEvents(new Events(), this);
 

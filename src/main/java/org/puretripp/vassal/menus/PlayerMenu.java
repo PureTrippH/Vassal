@@ -4,13 +4,16 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.lustrouslib.menu.Menu;
 import org.lustrouslib.menu.MenuIcon;
+import org.lustrouslib.wrapper.StateHandler;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 import org.puretripp.vassal.utils.interfaces.InviteDeliverer;
 
 public class PlayerMenu extends Menu {
-    VassalsPlayer you;
-    public PlayerMenu(VassalsPlayer vp) {
-        super("You:", vp);
+    private VassalsPlayer you;
+    private StateHandler<VassalsPlayer> state;
+    public PlayerMenu(VassalsPlayer vp, StateHandler state) {
+        super("You:", vp, state.getPlugin());
+        this.state = state;
         this.you = vp;
         populateItems();
     }
@@ -29,7 +32,7 @@ public class PlayerMenu extends Menu {
     private class InvitesMenu extends Menu {
         VassalsPlayer you;
         public InvitesMenu(VassalsPlayer vp) {
-            super("Your Invites:", vp);
+            super("Your Invites:", vp, state.getPlugin());
             this.you = vp;
             this.populateItems();
         }
