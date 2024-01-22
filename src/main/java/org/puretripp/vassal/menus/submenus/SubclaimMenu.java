@@ -1,15 +1,14 @@
 package org.puretripp.vassal.menus.submenus;
 
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.lustrouslib.menu.Menu;
 import org.lustrouslib.menu.MenuIcon;
 import org.lustrouslib.wrapper.StateHandler;
-import org.puretripp.vassal.events.OnVertexSelectionOpen;
-import org.puretripp.vassal.types.Vassal;
+import org.puretripp.vassal.playerstates.VertexMode;
+import org.puretripp.vassal.playerstates.ViewMode;
 import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
@@ -40,9 +39,7 @@ public class SubclaimMenu extends Menu {
         }));
         super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.TRIPWIRE_HOOK, ChatColor.GREEN + "Set Border",
                 "setBorder"), () -> {
-            vp.setSelectionMode(subclaim);
-            OnVertexSelectionOpen playerSelect = new OnVertexSelectionOpen(subclaim, vp);
-            Bukkit.getPluginManager().callEvent(playerSelect);
+            vp.setState(new VertexMode(subclaim, vp.getCurrMenu()));
             Player player = vp.getPlayer();
             player.closeInventory();
             player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 2);
@@ -54,7 +51,9 @@ public class SubclaimMenu extends Menu {
         }));
         super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.OBSERVER, ChatColor.GREEN + "Show Border",
                 "showBorder"), () -> {
-            subclaim.display(vp, vp.getPlayer());
+            vp.setState(new ViewMode(subclaim, vp.getCurrMenu(), vp));
+            vp.getPlayer().sendTitle(ChatColor.GREEN + "View Mode Enabled",
+                    ChatColor.GRAY +"Say 'exit' To Quit View Mode", 30, 30, 30);
         }));
         super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.WRITABLE_BOOK, ChatColor.GREEN + "Set Owner",
                 "setOwner")));
@@ -62,8 +61,10 @@ public class SubclaimMenu extends Menu {
                 "setHeight", Arrays.asList(new String[]{ChatColor.GREEN + "Left Click to Increase",
                         ChatColor.RED + "Right Click to Decrease"})), () -> {
             subclaim.setMaxHeight(subclaim.getMaxHeight() + 1);
+            this.refreshContents();
         }, () -> {
             subclaim.setMaxHeight(subclaim.getMaxHeight() - 1);
+            this.refreshContents();
         }));
         super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.GREEN_BANNER, ChatColor.GREEN + "Save Claim",
                 "save"), () -> {

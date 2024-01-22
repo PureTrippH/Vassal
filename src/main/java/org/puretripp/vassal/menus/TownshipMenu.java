@@ -69,4 +69,27 @@ public class TownshipMenu extends Menu implements Listener {
             super.refreshContents();
         }
     }
+
+    private class GovernnmentTab extends Menu {
+        Township town;
+        VassalsPlayer vp;
+        public GovernnmentTab(Township town, VassalsPlayer vp, StateHandler state) {
+            super("Governance", vp, state.getPlugin());
+            this.town = town;
+            this.vp = vp;
+            populateItems();
+        }
+        public void populateItems() {
+            for (int i = 0; i < town.getAllResidences().size(); i++) {
+                Residence res = town.getAllResidences().get(i);
+                int finalI = i;
+                super.contents.add(new MenuIcon(MenuIcon.generateItem(Material.GREEN_BED, (ChatColor.GREEN + res.getName()),
+                        "residence_" + i), () -> {
+                    int index = finalI;
+                    vp.pushMenu(new SubclaimMenu(town.getAllResidences().get(index), town, vp, state));
+                }));
+            }
+            super.refreshContents();
+        }
+    }
 }

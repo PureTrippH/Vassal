@@ -12,7 +12,6 @@ import java.util.UUID;
 
 /**
  * A class representing the whole world of the Vassal's plugin
- * TODO: Make Singleton
  * @author PureTrippH
  * @Version 1.1
  */

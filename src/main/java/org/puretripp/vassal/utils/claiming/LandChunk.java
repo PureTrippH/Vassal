@@ -83,7 +83,7 @@ public class LandChunk {
     public Chunk getChunk() {
         return chunk;
     }
-    public void displayChunk(Player p, boolean showNorth, boolean showSouth, boolean showEast, boolean showWest) {
+    public BukkitRunnable displayChunk(Player p, boolean showNorth, boolean showSouth, boolean showEast, boolean showWest) {
         BukkitRunnable showParticles = new BukkitRunnable() {
             int i = 0;
             @Override
@@ -125,6 +125,7 @@ public class LandChunk {
             }
         };
         showParticles.runTaskTimerAsynchronously(Main.getPlugin(Main.class), 1L, 20L);
+        return showParticles;
     }
 
     @Override

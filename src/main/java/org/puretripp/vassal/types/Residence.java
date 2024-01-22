@@ -1,19 +1,23 @@
 package org.puretripp.vassal.types;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.puretripp.vassal.main.Main;
 import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
+import org.puretripp.vassal.utils.interfaces.Displayable;
 import org.puretripp.vassal.utils.runnables.LineRunnable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
-public class Residence {
+public class Residence implements Displayable<ArrayList<LineRunnable>> {
     private ArrayList<Location> vertices;
     private String name;
     private ArrayList<UUID> members;
@@ -23,9 +27,9 @@ public class Residence {
     private boolean isComplexHeight;
     private int maxHeight;
     private int minHeight;
-    private LinkedList<ArrayList<LineRunnable>> partViewStack = new LinkedList<>();
 
-    public Residence(String name, Township town, ArrayList<Location> vertices, int maxHeight, UUID owner, ArrayList<UUID> members, boolean isComplexHeight) {
+    public Residence(String name, Township town, ArrayList<Location> vertices, int maxHeight, UUID owner,
+                     ArrayList<UUID> members, boolean isComplexHeight) {
         this.name = name;
         this.vertices = vertices;
         this.maxHeight = maxHeight;
@@ -81,21 +85,6 @@ public class Residence {
         return (intersections % 2 == 1) && (point.getY() <= maxHeight && (point.getY() >= minHeight));
     }
 
-    public void display(VassalsPlayer vp, Player p) {
-        //3
-        p.sendMessage("Executing: " + vertices.size());
-        for (int i = 0; i < vertices.size() - 1; i++) {
-            addLine(Residence.generateLine(vp, p, getVertex(i).clone(), getVertex(i + 1).clone()));
-            addLine(Residence.generateLine(vp, p, getVertex(i).clone().add(new Vector(0, maxHeight, 0)),
-                getVertex(i + 1).clone().add(new Vector(0, maxHeight, 0))));
-            addLine(Residence.generateLine(vp, p, getVertex(i).clone(),
-                getVertex(i).clone().add(new Vector(0, maxHeight, 0))));
-        }
-        addLine(Residence.generateLine(vp, p, getVertex(polygonSize() - 1).clone(), getVertex(0).clone()));
-        addLine(Residence.generateLine(vp, p, getVertex(polygonSize() - 1).clone(), getVertex(polygonSize() - 1).clone().add(new Vector(0, maxHeight, 0))));
-        addLine(Residence.generateLine(vp, p, getVertex(0).clone().add(new Vector(0, maxHeight, 0)), getVertex(polygonSize() - 1).clone().add(new Vector(0, maxHeight, 0))));
-    }
-
     public UUID getOwner() { return this.owner; }
 
     public String getName() {
@@ -108,29 +97,13 @@ public class Residence {
     public int polygonSize() {
         return vertices.size();
     }
-    public ArrayList<LineRunnable> removeBackVert() {
-        return partViewStack.removeFirst();
-    }
 
     public Location getVertex(int index) {
         return vertices.get(index);
     }
 
-    public void addLine(ArrayList<LineRunnable> lineToAdd) {
-        partViewStack.addFirst(lineToAdd);
-    }
-
-    public ArrayList<LineRunnable> getLine(int index) {
-        return partViewStack.get(index);
-    }
-
     public void clearLines(VassalsPlayer vp) {
-        for (ArrayList<LineRunnable> line : partViewStack) {
-            for (LineRunnable particle : line) {
-                particle.cancel();
-            }
-        }
-        vp.clearTasks();
+
     }
 
     public void setMaxHeight(int maxHeight) {
@@ -148,7 +121,6 @@ public class Residence {
     public static ArrayList<LineRunnable> generateLine(VassalsPlayer vp, Player p, Location start, Location end) {
         Location vertex1Clone = start.clone();
         Vector borderVector = end.clone().subtract(start).toVector().normalize().multiply(0.2);
-        p.sendMessage(String.valueOf(vertex1Clone.distance(end)));
         Location addedBorder = start;
         ArrayList<LineRunnable> line = new ArrayList<>();
         for (double covered = 0 ; covered < vertex1Clone.distance(end); start.add(borderVector)) {
@@ -164,5 +136,37 @@ public class Residence {
 
     public boolean removeVertex(Location vertex) {
         return vertices.remove(vertex);
+    }
+
+    @Override
+    public List<ArrayList<LineRunnable>> display(VassalsPlayer vp) {
+        Player p = vp.getPlayer();
+        LinkedList<ArrayList<LineRunnable>> partViewStack = new LinkedList<>();
+        for (int i = 0; i < vertices.size() - 1; i++) {
+            partViewStack.addFirst(Residence.generateLine(vp, p, getVertex(i).clone(), getVertex(i + 1).clone()));
+            partViewStack.addFirst(Residence.generateLine(vp, p, getVertex(i).clone()
+                            .add(new Vector(0, maxHeight, 0)),
+                    getVertex(i + 1).clone().add(new Vector(0, maxHeight, 0))));
+            partViewStack.addFirst(Residence.generateLine(vp, p, getVertex(i).clone(),
+                    getVertex(i).clone().add(new Vector(0, maxHeight, 0))));
+        }
+        partViewStack.addFirst(Residence.generateLine(vp, p, getVertex(polygonSize() - 1).clone(),
+                getVertex(0).clone()));
+        partViewStack.addFirst(Residence.generateLine(vp, p, getVertex(polygonSize() - 1).clone(),
+                getVertex(polygonSize() - 1).clone().add(new Vector(0, maxHeight, 0))));
+        partViewStack.addFirst(Residence.generateLine(vp, p, getVertex(0).clone().add(new Vector(0, maxHeight,
+                0)), getVertex(polygonSize() - 1).clone().add(new Vector(0, maxHeight, 0))));
+        return partViewStack;
+    }
+
+    @Override
+    public void destroyDisplay(List<ArrayList<LineRunnable>> list, VassalsPlayer vp) {
+        for (ArrayList<LineRunnable> line : list) {
+            for (LineRunnable runnable : line) {
+                runnable.stopParticles();
+            }
+        }
+        Bukkit.getLogger().warning("" + list.size());
+        vp.clearTasks();
     }
 }

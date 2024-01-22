@@ -3,7 +3,6 @@ package org.puretripp.vassal.utils.general;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.lustrouslib.menu.interfaces.GUIMenu;
 import org.lustrouslib.menu.interfaces.MenuClient;
 import org.lustrouslib.wrapper.PlayerWrapper;
 import org.puretripp.vassal.types.Nation;
@@ -11,7 +10,7 @@ import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.interfaces.Invitable;
-import org.puretripp.vassal.utils.interfaces.InviteDeliverer;
+import org.puretripp.vassal.utils.interfaces.Inviter;
 
 import java.util.*;
 
@@ -30,12 +29,12 @@ public class VassalsPlayer extends PlayerWrapper implements Invitable, MenuClien
     private Nation n;
     private UUID uuid;
     //Holds The Current Menu Stack
-    private Stack<GUIMenu> menuStack = new Stack<GUIMenu>();
-    private ArrayList<InviteDeliverer> invites;
+    private ArrayList<Inviter> invites;
 
     public VassalsPlayer(UUID uuid) {
         super(Bukkit.getPlayer(uuid));
         this.uuid = uuid;
+        this.invites = new ArrayList<Inviter>();
     }
     public UUID getUUID() { return uuid; }
     public void setSelected(Township t) { selectedTown = t; }
@@ -63,9 +62,6 @@ public class VassalsPlayer extends PlayerWrapper implements Invitable, MenuClien
 
 
     public Nation getNation() { return n; }
-
-    public boolean getIsSelectionMode() { return !(selectedResidence == null); }
-    public void setSelectionMode(Residence selected) { selectedResidence = selected; }
 
 
     public void setNation(Nation n) { this.n = n; }
@@ -103,30 +99,30 @@ public class VassalsPlayer extends PlayerWrapper implements Invitable, MenuClien
     }
 
     @Override
-    public void addInvite(InviteDeliverer inviter) {
+    public void addInvite(Inviter inviter) {
         if (inviter == null) throw new IllegalArgumentException("param can not be null!");
         invites.add(inviter);
     }
 
     @Override
-    public void acceptInvite(InviteDeliverer inviter) {
+    public void acceptInvite(Inviter inviter) {
         inviter.addToInviter(this);
         this.invites.remove(inviter);
     }
 
 
     @Override
-    public void rejectInvite(InviteDeliverer inviter) {
+    public void rejectInvite(Inviter inviter) {
         inviter.removeInvite(this);
         this.invites.remove(inviter);
     }
 
     @Override
-    public InviteDeliverer getInvite(int index) {
+    public Inviter getInvite(int index) {
         return this.invites.get(index);
     }
     @Override
-    public InviteDeliverer[] getAllInvites() {
-        return (InviteDeliverer[]) invites.toArray();
+    public Inviter[] getAllInvites() {
+        return invites.toArray(new Inviter[invites.size()]);
     }
 }

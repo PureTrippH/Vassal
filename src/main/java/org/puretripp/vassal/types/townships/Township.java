@@ -4,14 +4,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.puretripp.vassal.types.Nation;
-import org.puretripp.vassal.types.Vassal;
 import org.puretripp.vassal.utils.claiming.ChunkType;
+import org.puretripp.vassal.utils.interfaces.Displayable;
 import org.puretripp.vassal.utils.claiming.LandChunk;
 import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.interfaces.Invitable;
-import org.puretripp.vassal.utils.interfaces.InviteDeliverer;
-import org.puretripp.vassal.utils.interfaces.Permissable;
+import org.puretripp.vassal.utils.interfaces.Inviter;
+import org.puretripp.vassal.utils.interfaces.PermissionHolder;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
@@ -21,7 +22,7 @@ import java.util.*;
 /**
  * A Standard town.
  */
-public class Township implements Permissable, InviteDeliverer {
+public class Township implements PermissionHolder, Inviter, Displayable<BukkitRunnable> {
     public static HashMap<String, Township> towns = new HashMap<String, Township>();
     //private static transient final long serialVersionUID = -1681012206529286330L;
     private UUID leader;
@@ -76,6 +77,7 @@ public class Township implements Permissable, InviteDeliverer {
         this.permClasses.add(new PermClass("Citizen"));
         LandChunk lc = new LandChunk(c, leader, this, ChunkType.CAPITAL);
         chunks.add(lc);
+        players.put(leader, permClasses.get(0));
         VassalWorld.getWorldInstance().allLand.put(c, lc);
     }
 
@@ -92,13 +94,24 @@ public class Township implements Permissable, InviteDeliverer {
     }
 
     //TODO: Check for Adjacent Chunks/Buffer Regions
-    public void claimChunk(Chunk c) throws NoSuchFieldException {
+    public void claimChunk(Chunk c) {
         if(!this.chunks.contains(VassalWorld.getWorldInstance().getLandChunkByChunk(c))) {
+            boolean isBorderChunk = false;
+            for (int x = -1; x <= 1; x++) {
+                for (int z = -1; z <= 1; z++) {
+                    if(this.chunks.contains(VassalWorld.getWorldInstance()
+                            .getLandChunkByChunk(c.getWorld().getChunkAt(c.getX() + x, c.getZ() + z)))
+                            && Math.abs(x) != Math.abs(z)) {
+                        isBorderChunk = true;
+                    }
+                }
+            }
+            if (!isBorderChunk) throw new IllegalArgumentException("Chunk Must Directly Border Another Chunk");
             LandChunk newClaim = new LandChunk(c, null, this, ChunkType.DEFAULT);
             VassalWorld.getWorldInstance().allLand.put(c, newClaim);
             chunks.add(newClaim);
         } else {
-            throw new NoSuchFieldException("Chunk is Already Claimed!");
+            throw new NoSuchElementException("Chunk is Already Claimed!");
         }
     }
 
@@ -110,11 +123,13 @@ public class Township implements Permissable, InviteDeliverer {
         return uuidList;
     }
 
-    public void display(Player p) {
+    public ArrayList<BukkitRunnable> display(VassalsPlayer vp) {
+        Player p = vp.getPlayer();
+        ArrayList<BukkitRunnable> border = new ArrayList<BukkitRunnable>();
         LandChunk origin = chunks.get(0);
         for(int i = 0; i < chunks.size(); i++) {
             Chunk c = chunks.get(i).getChunk();
-            chunks.get(i).displayChunk(p,
+            BukkitRunnable claimChunk = chunks.get(i).displayChunk(p,
                 //North: Subtract 1 from Chunk z
                 !chunks.contains(VassalWorld.getWorldInstance().getLandChunkByChunk(new Location(c.getWorld(),
                     c.getX() * 16, 64, (c.getZ() - 1) * 16).getChunk())),
@@ -128,8 +143,18 @@ public class Township implements Permissable, InviteDeliverer {
                 !chunks.contains(VassalWorld.getWorldInstance().getLandChunkByChunk(new Location(c.getWorld(),
                     (c.getX() - 1) * 16, 64, c.getZ() * 16).getChunk()))
             );
+            border.add(claimChunk);
+        }
+        return border;
+    }
+
+    @Override
+    public void destroyDisplay(List<BukkitRunnable> list, VassalsPlayer vp) {
+        for (BukkitRunnable runnable : list) {
+            runnable.cancel();
         }
     }
+
     public static Township getTownByName(String s) {
         return towns.get(s);
     }
@@ -280,4 +305,10 @@ public class Township implements Permissable, InviteDeliverer {
         vp.addInvite(this);
         invites.add(inv);
     }
+
+
+    public String toString() {
+        return "Township: " + this.name;
+    }
+
 }

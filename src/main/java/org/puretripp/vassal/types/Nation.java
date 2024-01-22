@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.puretripp.vassal.types.governments.GovStyles;
 import org.puretripp.vassal.types.townships.Township;
-import org.puretripp.vassal.utils.interfaces.Permissable;
+import org.puretripp.vassal.utils.interfaces.PermissionHolder;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
@@ -17,7 +17,7 @@ import java.util.*;
  * A Nation That Represents the Township Graph & Total Nation Properties
  * @Version 1.0
  */
-public class Nation implements Permissable {
+public class Nation implements PermissionHolder {
 
     private String name;
     private Material bannerType = Material.WHITE_BANNER;

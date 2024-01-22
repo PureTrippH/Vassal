@@ -9,10 +9,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mongodb.client.MongoClient;
 import org.lustrouslib.command.CommandManager;
+import org.lustrouslib.config.ConfigBuilder;
+import org.lustrouslib.config.ConfigFile;
+import org.lustrouslib.event.PlayerStateHandler;
 import org.lustrouslib.wrapper.StateHandler;
 import org.puretripp.vassal.commands.TownCommands;
 import org.puretripp.vassal.events.Events;
 import org.puretripp.vassal.utils.general.VassalWorld;
+import org.puretripp.vassal.utils.general.VassalsPlayer;
 
 public final class Main extends JavaPlugin {
     //Btw this password is Old
@@ -21,11 +25,16 @@ public final class Main extends JavaPlugin {
     private MongoClient client;
     //Holds all of the Server's data from the curent session.
     public static VassalWorld currentInstance;
+    public static ConfigFile config;
     private Economy econ;
+    private PlayerStateHandler stateHander;
     @Override
     public void onEnable() {
         currentInstance = VassalWorld.getWorldInstance();
-        CommandManager towncmd = new CommandManager("vassal", new StateHandler(getPlugin(Main.class), currentInstance));
+        config = (new ConfigBuilder("settings.yml", this)).build();
+
+        StateHandler<VassalsPlayer> globalState = new StateHandler(getPlugin(Main.class), currentInstance);
+        CommandManager towncmd = new CommandManager("vassal", globalState);
         towncmd.registerCommand("pm", new TownCommands.SelfCommand());
         towncmd.registerCommand("invite", new TownCommands.inviteCommand());
         towncmd.registerCommand("create", new TownCommands.createCommand());
@@ -35,7 +44,7 @@ public final class Main extends JavaPlugin {
         towncmd.registerCommand("menu", new TownCommands.menu());
         //Register Events
         getServer().getPluginManager().registerEvents(new Events(), this);
-
+        PlayerStateHandler stateHander = new PlayerStateHandler(globalState);
         //Try connecting to the database
         try {
             //Logger.getLogger("org.mongodb.driver").setLevel(Level.WARNING);

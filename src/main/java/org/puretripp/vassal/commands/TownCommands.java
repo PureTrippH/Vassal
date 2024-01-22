@@ -8,14 +8,14 @@ import org.lustrouslib.wrapper.StateHandler;
 import org.puretripp.vassal.menus.PlayerMenu;
 import org.puretripp.vassal.menus.submenus.SubclaimMenu;
 import org.puretripp.vassal.menus.TownshipMenu;
+import org.puretripp.vassal.playerstates.ViewMode;
 import org.puretripp.vassal.types.townships.Township;
 import org.puretripp.vassal.types.Residence;
 import org.puretripp.vassal.utils.claiming.perms.PermClass;
 import org.puretripp.vassal.utils.general.VassalWorld;
 import org.puretripp.vassal.utils.general.VassalsPlayer;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class TownCommands {
     public static class SelfCommand implements SubCommand {
@@ -30,6 +30,11 @@ public class TownCommands {
         public String getName() { return name; }
         public String getDesc() {
             return desc;
+        }
+
+        @Override
+        public List<String> getPossibleArguments(int i) {
+            return null;
         }
     }
 
@@ -56,6 +61,11 @@ public class TownCommands {
         public String getDesc() {
             return desc;
         }
+
+        @Override
+        public List<String> getPossibleArguments(int i) {
+            return new ArrayList<String>(Arrays.asList("allOnlinePlayers"));
+        }
     }
 
 
@@ -66,13 +76,18 @@ public class TownCommands {
         public void onCommand(PlayerWrapper wrapper, StateHandler<? extends PlayerWrapper> state, String[] args) {
             Player p = wrapper.getPlayer();
             VassalsPlayer vp = (VassalsPlayer) state.getPlayerWrapper(p);
-            vp.getSelected().display(p);
+            vp.setState(new ViewMode(vp.getSelected(), null, vp));
         }
         public String getName() {
             return name;
         }
         public String getDesc() {
             return desc;
+        }
+
+        @Override
+        public List<String> getPossibleArguments(int i) {
+            return null;
         }
     }
 
@@ -85,18 +100,19 @@ public class TownCommands {
         public void onCommand(PlayerWrapper wrapper, StateHandler<? extends PlayerWrapper> state, String[] args) {
             Player p = wrapper.getPlayer();
             VassalsPlayer vp = (VassalsPlayer) state.getPlayerWrapper(p);
-            try {
-                vp.getSelected().claimChunk(p.getLocation().getChunk());
-                vp.clearTasks();
-                vp.getSelected().display(p);
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-            vp.getSelected().display(p);
+            vp.getSelected().claimChunk(p.getLocation().getChunk());
+            vp.clearTasks();
+            vp.getSelected().display(vp);
+            vp.getSelected().display(vp);
         }
         public String getName() { return name; }
         public String getDesc() {
             return desc;
+        }
+
+        @Override
+        public List<String> getPossibleArguments(int i) {
+            return null;
         }
     }
 
@@ -114,6 +130,11 @@ public class TownCommands {
         public String getName() { return name; }
         public String getDesc() {
             return desc;
+        }
+
+        @Override
+        public List<String> getPossibleArguments(int i) {
+            return null;
         }
     }
 
@@ -154,6 +175,11 @@ public class TownCommands {
         public String getDesc() {
             return desc;
         }
+
+        @Override
+        public List<String> getPossibleArguments(int i) {
+            return new ArrayList<>(Arrays.asList("<Township Name>"));
+        }
     }
 
 
@@ -176,12 +202,16 @@ public class TownCommands {
             }
             Township t = vp.getSelected();
             Residence newRes = new Residence(name, t);
-            SubclaimMenu menu = new SubclaimMenu(newRes, t, vp, state);
-            p.openInventory(menu.getInv());
+            vp.pushMenu(new SubclaimMenu(newRes, t, vp, state));
         }
         public String getName() { return name; }
         public String getDesc() {
             return desc;
+        }
+
+        @Override
+        public List<String> getPossibleArguments(int i) {
+            return new ArrayList<>(Arrays.asList("<Residence Name>"));
         }
     }
 }

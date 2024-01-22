@@ -1,13 +1,10 @@
 package org.puretripp.vassal.utils.interfaces;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public interface Invitable {
-    public void addInvite(InviteDeliverer inviter);
-    public void acceptInvite(InviteDeliverer inviter);
-    public void rejectInvite(InviteDeliverer inviter);
-    public InviteDeliverer getInvite(int index);
-    public Object[] getAllInvites();
+    public void addInvite(Inviter inviter);
+    public void acceptInvite(Inviter inviter);
+    public void rejectInvite(Inviter inviter);
+    public Inviter getInvite(int index);
+    public Inviter[] getAllInvites();
 
 }

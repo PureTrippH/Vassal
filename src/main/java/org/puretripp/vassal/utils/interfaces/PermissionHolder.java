@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
-public interface Permissable {
+public interface PermissionHolder {
     ArrayList<PermClass> permClasses = new ArrayList<PermClass>();
     HashMap<VassalsPlayer, PermClass> permMap = new HashMap<VassalsPlayer, PermClass>();
 
